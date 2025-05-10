@@ -1,5 +1,5 @@
 import { Icons } from "@/components/icons";
-import { HomeIcon, NotebookIcon } from "lucide-react";
+import { HomeIcon } from "lucide-react";
 
 export const DATA = {
 	name: "Marnel Valentin",
@@ -11,7 +11,7 @@ export const DATA = {
 	description:
 		"Web Developer with a passion for creating innovative solutions and assisting others.",
 	summary:
-		"I am Mhar Nhel Valentin, a 23-year-old web developer with a Bachelor of Science in Information Technology. My expertise lies in developing software, particularly websites. As a versatile and quick learner, I've honed my skills in various web technologies and frameworks. My passion for coding and problem-solving drives me to continuously expand my knowledge and take on new challenges in the ever-evolving field of web development.",
+		"I am Mhar Nhel Valentin, a 24-year-old web developer with a Bachelor of Science in Information Technology. My expertise lies in developing software, particularly websites. As a versatile and quick learner, I've honed my skills in various web technologies and frameworks. My passion for coding and problem-solving drives me to continuously expand my knowledge and take on new challenges in the ever-evolving field of web development.",
 	avatarUrl: "/me.png",
 	skills: [
 		"React",
@@ -102,6 +102,30 @@ export const DATA = {
 			description:
 				"Developed and deployed various full-stack web applications for clients using modern technologies. Implemented responsive front-end designs with React and Next.js, built robust back-end APIs using Node.js and Express, and integrated PostgreSQL databases. Utilized Git for version control and deployed applications on cloud platforms like Vercel and Heroku.",
 		},
+		{
+			company: "MPMPC",
+			badges: [],
+			href: "",
+			location: "Mamburao, Occidental Mindoro",
+			title: "Layout Artist",
+			logoUrl: "/mpmpc.jpg",
+			start: "October 2023",
+			end: "Present",
+			description:
+				"Design and Layout Posters, Flyers, and other promotional materials for the Mindoro Progressive Multi-Purpose Cooperative (MPMPC).",
+		},
+		{
+			company: "Batangas State University - STEERHUB",
+			href: "https://batstateu.edu.ph/",
+			badges: [],
+			location: "Alangilan, Batangas City, Batangas",
+			title: "University Research Associate I (Full Stack Web Developer)",
+			logoUrl: "/batstateu_logo.png",
+			start: "November 2024",
+			end: "Present",
+			description:
+				"Leading full-stack development for Batangas State University's STEERHUB platform, supporting the TRIOE initiative in research collaboration and resource management.",
+		},
 	],
 	education: [
 		{
@@ -182,7 +206,6 @@ export const DATA = {
 			image: "/meta.png",
 			video: "",
 		},
-
 		{
 			title: "Paluan Tour",
 			href: "",
@@ -204,9 +227,107 @@ export const DATA = {
 					href: "https://github.com/gitcommit222/paluan-tour-monitoring",
 					icon: <Icons.github className="size-3" />,
 				},
+				{
+					type: "Website",
+					href: "https://paluan-tour.vercel.app/",
+					icon: <Icons.globe className="size-3" />,
+				},
 			],
 			image: "/Paluan_LANDING.png",
 			video: "",
+		},
+		{
+			title: "BatStateU Marketplace",
+			href: "http://198.177.125.118/marketplace",
+			dates: "December 2024 - January 2025",
+			active: false,
+			description:
+				"A web application that allows users to buy and sell items on the Batangas State University campus.",
+			technologies: [
+				"Next.js",
+				"MySQL",
+				"Sequelize",
+				"TailwindCSS",
+				"Shadcn UI",
+				"Tanstack Query",
+				"Typescript",
+			],
+			links: [
+				{
+					type: "Website",
+					href: "http://198.177.125.118/marketplace",
+					icon: <Icons.globe className="size-3" />,
+				},
+			],
+			image: "/bsu-marketplace.png",
+			video: "",
+		},
+		{
+			title: "TRIOE",
+			href: "http://trioe.dev",
+			dates: "November 2024 - Present",
+			active: false,
+			description:
+				"A website platform for the Batangas State University's TRIOE initiative.",
+			technologies: [
+				"Next.js 15",
+				"MySQL",
+				"Sequelize",
+				"TailwindCSS",
+				"Shadcn UI",
+				"Tanstack Query",
+				"Typescript",
+			],
+			links: [
+				{
+					type: "Website",
+					href: "http://trioe.dev",
+					icon: <Icons.globe className="size-3" />,
+				},
+			],
+			image: "",
+			video: "/trioe.mp4",
+		},
+		{
+			title: "Mhar - AI Agent Web Extension",
+			href: "",
+			dates: "April 2025 - Present",
+			active: false,
+			description:
+				"A web extension that allows users to interact with AI agents on any website.",
+			technologies: ["HTML", "CSS", "Javascript", "Ollama", "Llama 3.2"],
+			links: [
+				{
+					type: "Source",
+					href: "https://github.com/Marnel8/oracle",
+					icon: <Icons.github className="size-3" />,
+				},
+			],
+			image: "",
+			video: "/mhar.mp4",
+		},
+		{
+			title: "Malinta Connect",
+			href: "https://malinta-connect.vercel.app/",
+			dates: "May 2025 - Present",
+			active: false,
+			description:
+				"A web platform for Barangay Malinta residents to report issues and for officials to track their progress.",
+			technologies: ["Next.js", "TailwindCSS", "Shadcn UI", "Firebase"],
+			links: [
+				{
+					type: "Source",
+					href: "https://github.com/Marnel8/malinta-connect",
+					icon: <Icons.github className="size-3" />,
+				},
+				{
+					type: "Website",
+					href: "https://malinta-connect.vercel.app/",
+					icon: <Icons.globe className="size-3" />,
+				},
+			],
+			image: "",
+			video: "/malinta.mp4",
 		},
 	],
 	hackathons: [
