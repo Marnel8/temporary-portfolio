@@ -112,7 +112,7 @@ export const DATA = {
 			title: "Layout Artist",
 			logoUrl: "/mpmpc.jpg",
 			start: "October 2023",
-			end: "Present",
+			end: "November 2024",
 			description:
 				"Design and Layout Posters, Flyers, and other promotional materials for the Mindoro Progressive Multi-Purpose Cooperative (MPMPC).",
 		},
@@ -124,7 +124,7 @@ export const DATA = {
 			title: "University Research Associate I (Full Stack Web Developer)",
 			logoUrl: "/batstateu_logo.png",
 			start: "November 2024",
-			end: "Present",
+			end: "September 2025",
 			description:
 				"Leading full-stack development for Batangas State University's STEERHUB platform, supporting the TRIOE initiative in research collaboration and resource management.",
 		},
