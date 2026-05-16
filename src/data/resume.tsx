@@ -9,9 +9,9 @@ export const DATA = {
 	locationLink:
 		"https://www.google.com/maps/place/Mamburao,+Occidental+Mindoro",
 	description:
-		"Web Developer with a passion for creating innovative solutions and assisting others.",
+		"Web Developer & Data Science graduate student passionate about building innovative solutions.",
 	summary:
-		"I am Mhar Nhel Valentin, a 24-year-old web developer with a Bachelor of Science in Information Technology. My expertise lies in developing software, particularly websites. As a versatile and quick learner, I've honed my skills in various web technologies and frameworks. My passion for coding and problem-solving drives me to continuously expand my knowledge and take on new challenges in the ever-evolving field of web development.",
+		"I am Mhar Nhel Valentin, a 25-year-old web developer and data science enthusiast currently pursuing a Master of Science in Data Science. I hold a Bachelor of Science in Information Technology and have extensive experience building full-stack web applications. My skill set spans modern web technologies, backend APIs, and data analysis — including forecasting and exploratory analysis using Python with Jupyter and R with RStudio. I also practice AI-assisted development using tools like Claude Code, Cursor, and Codex — leveraging AI to ship faster and smarter.",
 	avatarUrl: "/me.png",
 	skills: [
 		"React",
@@ -20,7 +20,13 @@ export const DATA = {
 		"JavaScript",
 		"Typescript",
 		"Node.js",
+		"FastAPI",
 		"Python",
+		"Jupyter",
+		"R",
+		"RStudio",
+		"Data Analysis",
+		"Forecasting",
 		"PostgreSQL",
 		"MySQL",
 		"MongoDB",
@@ -33,6 +39,9 @@ export const DATA = {
 		"Redux",
 		"Zustand",
 		"Tanstack Query",
+		"Claude Code",
+		"Cursor",
+		"Codex",
 		"Figma",
 		"Photoshop",
 		"MS Office Suite",
@@ -124,12 +133,20 @@ export const DATA = {
 			title: "University Research Associate I (Full Stack Web Developer)",
 			logoUrl: "/batstateu_logo.png",
 			start: "November 2024",
-			end: "September 2025",
+			end: "Present",
 			description:
 				"Leading full-stack development for Batangas State University's STEERHUB platform, supporting the TRIOE initiative in research collaboration and resource management.",
 		},
 	],
 	education: [
+		{
+			school: "Batangas State University - TNEU",
+			href: "https://batstateu.edu.ph/",
+			degree: "Master of Science in Data Science",
+			logoUrl: "/batstateu_logo.png",
+			start: "2025",
+			end: "Present",
+		},
 		{
 			school: "Batangas State University - TNEU",
 			href: "https://batstateu.edu.ph/",

@@ -3,15 +3,11 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { DATA } from "@/data/resume";
 import { cn } from "@/lib/utils";
-import type { Metadata } from "next";
-import { Inter as FontSans } from "next/font/google";
-import "./globals.css";
 import { SmoothCursor } from "@/components/ui/smooth-cursor";
-
-const fontSans = FontSans({
-	subsets: ["latin"],
-	variable: "--font-sans",
-});
+import type { Metadata } from "next";
+import { GeistSans } from "geist/font/sans";
+import { GeistMono } from "geist/font/mono";
+import "./globals.css";
 
 export const metadata: Metadata = {
 	metadataBase: new URL(DATA.url),
@@ -54,17 +50,44 @@ export default function RootLayout({
 }: Readonly<{
 	children: React.ReactNode;
 }>) {
+	const year = new Date().getFullYear();
 	return (
-		<html lang="en" suppressHydrationWarning>
+		<html
+			lang="en"
+			suppressHydrationWarning
+			className={cn(GeistSans.variable, GeistMono.variable)}
+			style={
+				{
+					"--font-sans": GeistSans.style.fontFamily,
+					"--font-mono": GeistMono.style.fontFamily,
+				} as React.CSSProperties
+			}
+		>
 			<body
 				className={cn(
-					"min-h-screen bg-background font-sans antialiased max-w-2xl mx-auto py-12 sm:py-24 px-6",
-					fontSans.variable
+					"grain min-h-screen bg-background font-sans antialiased relative",
+					GeistSans.className
 				)}
 			>
 				<ThemeProvider attribute="class" defaultTheme="light">
 					<TooltipProvider delayDuration={0}>
-						{children}
+						{/* fixed wordmark · top-left */}
+						<div className="pointer-events-none fixed top-5 left-5 z-40 hidden sm:flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+							<span className="inline-block size-1.5 rounded-full bg-[hsl(var(--accent))]" />
+							<span>MV</span>
+							<span aria-hidden>/</span>
+							<span className="tabular">{year}</span>
+						</div>
+
+						{/* fixed page label · top-right */}
+						<div className="pointer-events-none fixed top-5 right-5 z-40 hidden sm:block font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+							<span aria-hidden>/ </span>portfolio
+						</div>
+
+						<div className="max-w-2xl mx-auto py-16 sm:py-24 px-6 relative z-10">
+							{children}
+						</div>
+
 						<Navbar />
 						<SmoothCursor />
 					</TooltipProvider>
