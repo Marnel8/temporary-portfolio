@@ -2,11 +2,10 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import * as THREE from "three";
 import { fightStore, liveKeys } from "@/lib/arcade/store";
 import { keysToInput, gamepadToInput } from "@/lib/arcade/input";
 import { decideAction, scriptedPlayerFrame } from "@/lib/arcade/ai";
-import { stepFight, FIGHT, NEUTRAL_INPUT, type MoveKind } from "@/lib/arcade/fight-engine";
+import { stepFight, FIGHT } from "@/lib/arcade/fight-engine";
 import { getFighters } from "@/lib/arcade/fighters";
 import type { MatchResult } from "@/lib/arcade/machine";
 import Fighter from "./fighter";
@@ -114,7 +113,7 @@ export default function StageRound({
 				<gridHelper args={[30, 30, ACCENT, "#1a1d24"]} position={[0, 0.01, 0]} />
 				<Fighter state={fightStore.state.player} color={ACCENT} />
 				<Fighter state={fightStore.state.opponent} color={HOT} />
-				<Loop cinematic={cinematic} onDone={onDone} />
+				<Loop key={`${fighterIndex}-${cinematic}`} cinematic={cinematic} onDone={onDone} />
 			</Canvas>
 		</div>
 	);
