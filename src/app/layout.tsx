@@ -6,6 +6,7 @@ import { GeistMono } from "geist/font/mono";
 import { Unbounded } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import SmoothScroll from "@/components/experience/smooth-scroll";
+import ArcadeRoot from "@/components/arcade/arcade-root";
 import Preloader from "@/components/experience/preloader";
 import Cursor from "@/components/experience/cursor";
 import Hud from "@/components/experience/hud";
@@ -78,7 +79,9 @@ export default function RootLayout({
 				<Background />
 				<Hud />
 				<Cursor />
-				<SmoothScroll>{children}</SmoothScroll>
+				<ArcadeRoot>
+					<SmoothScroll>{children}</SmoothScroll>
+				</ArcadeRoot>
 				<Analytics />
 			</body>
 		</html>
