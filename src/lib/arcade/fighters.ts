@@ -29,7 +29,7 @@ function powerFor(seed: string): number {
 
 export function getFighters(): Fighter[] {
 	return DATA.projects.map((p, index) => {
-		const technologies = p.technologies ?? [];
+		const technologies = [...(p.technologies ?? [])];
 		const stats = technologies.slice(0, 4).map((t) => ({
 			label: t.toUpperCase(),
 			value: powerFor(t + p.title),
