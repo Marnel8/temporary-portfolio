@@ -64,6 +64,21 @@ describe("fight-engine", () => {
 		expect(s.winner).toBe("player");
 	});
 
+	it("a sustained heavy attack held across the whole move connects exactly once", () => {
+		// Regression for hasHit flag: pin opponent in hitstun so they can't flinch out of range,
+		// ensuring every active frame is eligible to hit. Without the hasHit guard each of
+		// FIGHT.HEAVY.active frames would deal full damage.
+		const s = createFightState();
+		s.player.x = -0.4;
+		s.opponent.x = 0.4;
+		s.opponent.hitstun = 999; // prevent knockback flinch so all active ticks stay in range
+		const before = s.opponent.health;
+		const totalTicks = FIGHT.HEAVY.windup + FIGHT.HEAVY.active + FIGHT.HEAVY.recovery;
+		for (let i = 0; i < totalTicks; i++) stepFight(s, attack("heavy"), NEUTRAL_INPUT);
+		const damage = before - s.opponent.health;
+		expect(damage).toBe(FIGHT.HEAVY.dmg);
+	});
+
 	it("times out to the higher-health fighter", () => {
 		const s = createFightState();
 		s.timer = FIGHT.DT * 1.5; // about to expire

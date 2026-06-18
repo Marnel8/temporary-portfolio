@@ -28,6 +28,7 @@ export interface FighterState {
 	moveTimer: number; // ticks remaining in current attack/jump
 	hitstun: number; // ticks of stagger; can't act
 	blockstun: number;
+	hasHit: boolean; // true once this swing has already connected; reset on new attack
 }
 
 export interface FightState {
@@ -66,6 +67,7 @@ function makeFighter(x: number, facing: Facing): FighterState {
 		moveTimer: 0,
 		hitstun: 0,
 		blockstun: 0,
+		hasHit: false,
 	};
 }
 
@@ -96,6 +98,7 @@ function startMove(f: FighterState, kind: "light" | "heavy") {
 	const d = attackDef(kind);
 	f.move = kind;
 	f.moveTimer = d.windup + d.active + d.recovery;
+	f.hasHit = false;
 }
 
 function canAct(f: FighterState): boolean {
@@ -137,9 +140,9 @@ function stepFighter(f: FighterState, input: InputFrame) {
 	f.x = Math.max(-FIGHT.ARENA_HALF, Math.min(FIGHT.ARENA_HALF, f.x));
 }
 
-function tryHit(attacker: FighterState, defender: FightState["player"], s: FightState, who: "player" | "opponent") {
+function tryHit(attacker: FighterState, defender: FightState["player"], s: FightState) {
 	if (!inActiveFrames(attacker)) return;
-	// one hit per active window: mark by zeroing remaining active via flag on moveTimer
+	if (attacker.hasHit) return;
 	const d = attackDef(attacker.move);
 	const dist = Math.abs(attacker.x - defender.x);
 	const facingFoe = Math.sign(defender.x - attacker.x) === attacker.facing;
@@ -153,8 +156,7 @@ function tryHit(attacker: FighterState, defender: FightState["player"], s: Fight
 	if (blocking) defender.blockstun = 6;
 	else defender.hitstun = attacker.move === "heavy" ? 16 : 8;
 
-	// consume the rest of the active+recovery so a single swing lands once
-	attacker.moveTimer = Math.min(attacker.moveTimer, d.recovery);
+	attacker.hasHit = true;
 	s.hitFlash = 1;
 }
 
@@ -168,8 +170,8 @@ export function stepFight(s: FightState, p: InputFrame, o: InputFrame): void {
 	stepFighter(s.player, p);
 	stepFighter(s.opponent, o);
 
-	tryHit(s.player, s.opponent, s, "player");
-	tryHit(s.opponent, s.player, s, "opponent");
+	tryHit(s.player, s.opponent, s);
+	tryHit(s.opponent, s.player, s);
 
 	// keep fighters from overlapping
 	const minGap = 0.7;
