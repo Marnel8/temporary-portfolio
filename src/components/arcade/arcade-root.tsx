@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useReducer } from "react";
+import { useEffect, useReducer, useState } from "react";
 import {
 	arcadeReducer,
 	initialArcadeState,
@@ -21,13 +21,14 @@ export default function ArcadeRoot({ children }: { children: React.ReactNode }) 
 		return initialArcadeState(reduced ? "classic" : "boot");
 	});
 
-	// detect touch + reduced motion for cinematic mode
-	const cinematic =
-		typeof window !== "undefined" &&
-		(("ontouchstart" in window) ||
-			window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+	const [cinematic, setCinematic] = useState(false);
 
 	useEffect(() => {
+		setCinematic(
+			"ontouchstart" in window ||
+				window.matchMedia("(prefers-reduced-motion: reduce)").matches
+		);
+
 		const hasTouch = "ontouchstart" in window;
 		fightStore.mode = detectMode(hasTouch);
 
@@ -53,6 +54,7 @@ export default function ArcadeRoot({ children }: { children: React.ReactNode }) 
 	// lock body scroll while in the arcade
 	useEffect(() => {
 		document.body.style.overflow = state.stage === "classic" ? "" : "hidden";
+		return () => { document.body.style.overflow = ""; };
 	}, [state.stage]);
 
 	if (state.stage === "classic") return <>{children}</>;
