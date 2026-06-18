@@ -1,14 +1,23 @@
-import Navbar from "@/components/navbar";
-import { ThemeProvider } from "@/components/theme-provider";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import { DATA } from "@/data/resume";
 import { cn } from "@/lib/utils";
-import { SmoothCursor } from "@/components/ui/smooth-cursor";
 import type { Metadata } from "next";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
-import { Analytics } from "@vercel/analytics/next"
+import { Unbounded } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
+import SmoothScroll from "@/components/experience/smooth-scroll";
+import Preloader from "@/components/experience/preloader";
+import Cursor from "@/components/experience/cursor";
+import Hud from "@/components/experience/hud";
+import Background from "@/components/three/background";
 import "./globals.css";
+
+const display = Unbounded({
+	subsets: ["latin"],
+	weight: ["400", "500", "600", "700", "800"],
+	variable: "--font-display",
+	display: "swap",
+});
 
 export const metadata: Metadata = {
 	metadataBase: new URL(DATA.url),
@@ -40,10 +49,6 @@ export const metadata: Metadata = {
 		title: `${DATA.name}`,
 		card: "summary_large_image",
 	},
-	verification: {
-		google: "",
-		yandex: "",
-	},
 };
 
 export default function RootLayout({
@@ -51,12 +56,11 @@ export default function RootLayout({
 }: Readonly<{
 	children: React.ReactNode;
 }>) {
-	const year = new Date().getFullYear();
 	return (
 		<html
 			lang="en"
 			suppressHydrationWarning
-			className={cn(GeistSans.variable, GeistMono.variable)}
+			className={cn("dark", GeistSans.variable, GeistMono.variable, display.variable)}
 			style={
 				{
 					"--font-sans": GeistSans.style.fontFamily,
@@ -66,34 +70,16 @@ export default function RootLayout({
 		>
 			<body
 				className={cn(
-					"grain min-h-screen bg-background font-sans antialiased relative",
+					"grain relative min-h-screen overflow-x-hidden bg-[#070809] font-sans text-[#f5f3ef] antialiased",
 					GeistSans.className
 				)}
 			>
-				<ThemeProvider attribute="class" defaultTheme="light">
-					<TooltipProvider delayDuration={0}>
-						{/* fixed wordmark · top-left */}
-						<div className="pointer-events-none fixed top-5 left-5 z-40 hidden sm:flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-							<span className="inline-block size-1.5 rounded-full bg-[hsl(var(--accent))]" />
-							<span>MV</span>
-							<span aria-hidden>/</span>
-							<span className="tabular">{year}</span>
-						</div>
-
-						{/* fixed page label · top-right */}
-						<div className="pointer-events-none fixed top-5 right-5 z-40 hidden sm:block font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-							<span aria-hidden>/ </span>portfolio
-						</div>
-
-						<div className="max-w-2xl mx-auto py-16 sm:py-24 px-6 relative z-10">
-							{children}
-						</div>
-
-						<Navbar />
-						<SmoothCursor />
-						<Analytics />
-					</TooltipProvider>
-				</ThemeProvider>
+				<Preloader />
+				<Background />
+				<Hud />
+				<Cursor />
+				<SmoothScroll>{children}</SmoothScroll>
+				<Analytics />
 			</body>
 		</html>
 	);

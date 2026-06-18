@@ -1,352 +1,328 @@
-import { HackathonCard } from "@/components/hackathon-card";
-import BlurFade from "@/components/magicui/blur-fade";
-import BlurFadeText from "@/components/magicui/blur-fade-text";
-import { ProjectCard } from "@/components/project-card";
-import { ResumeCard } from "@/components/resume-card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { DATA } from "@/data/resume";
+"use client";
+
+import { useLayoutEffect, useRef } from "react";
 import Link from "next/link";
-import Markdown from "react-markdown";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { DATA } from "@/data/resume";
+import ProjectBento from "@/components/experience/project-bento";
 
-const BLUR_FADE_DELAY = 0.05;
+const ACCENT = "hsl(222,96%,64%)";
 
-const SectionHeader = ({
-	index,
-	title,
-	caption,
-}: {
-	index: string;
-	title: string;
-	caption?: string;
-}) => (
-	<div className="flex items-baseline gap-4 mb-5">
-		<span className="eyebrow tabular shrink-0">
-			{index} <span className="opacity-40">—</span>
+/* ──────────────────────────────────────────────────────────── helpers ── */
+
+function HudLabel({ children }: { children: React.ReactNode }) {
+	return (
+		<span className="font-mono text-[10px] uppercase tracking-[0.3em] text-white/40">
+			{children}
 		</span>
-		<h2 className="text-lg font-semibold tracking-tight">{title}</h2>
-		<div className="flex-1 h-px bg-border translate-y-[-2px]" />
-		{caption && (
-			<span className="eyebrow tabular hidden sm:inline shrink-0">
-				{caption}
+	);
+}
+
+function SectionTag({ index, title }: { index: string; title: string }) {
+	return (
+		<div className="mb-12 flex items-center gap-4">
+			<span className="font-mono text-[11px] tracking-[0.3em] text-[hsl(222,96%,64%)]">
+				{index}
 			</span>
-		)}
-	</div>
-);
+			<span className="h-px w-10 bg-white/20" />
+			<h2 className="font-mono text-[11px] uppercase tracking-[0.35em] text-white/60">
+				{title}
+			</h2>
+		</div>
+	);
+}
+
+/* ──────────────────────────────────────────────────────────────── page ── */
 
 export default function Page() {
-	const firstName = DATA.name.split(" ")[0];
+	const scope = useRef<HTMLElement>(null);
+	const firstName = DATA.name.split(" ")[0].toUpperCase();
+	const lastName = DATA.name.split(" ").slice(1).join(" ").toUpperCase();
+
+	useLayoutEffect(() => {
+		gsap.registerPlugin(ScrollTrigger);
+
+		const ctx = gsap.context(() => {
+			// HERO — staggered reveal of clipped lines
+			gsap.set(".hero-line span", { yPercent: 110 });
+			gsap.set(".hero-fade", { opacity: 0, y: 24 });
+
+			const tl = gsap.timeline({ delay: 2.7 });
+			tl.to(".hero-line span", {
+				yPercent: 0,
+				duration: 1.1,
+				ease: "power4.out",
+				stagger: 0.12,
+			}).to(
+				".hero-fade",
+				{ opacity: 1, y: 0, duration: 1, ease: "power3.out", stagger: 0.12 },
+				"-=0.7"
+			);
+
+			// generic parallax-on-scroll for [data-speed] elements
+			gsap.utils.toArray<HTMLElement>("[data-speed]").forEach((el) => {
+				const speed = parseFloat(el.dataset.speed || "0");
+				gsap.to(el, {
+					y: () => speed * ScrollTrigger.maxScroll(window) * -0.06,
+					ease: "none",
+					scrollTrigger: {
+						trigger: el,
+						start: "top bottom",
+						end: "bottom top",
+						scrub: true,
+					},
+				});
+			});
+
+			// MANIFESTO — word-by-word colour reveal
+			gsap.to(".manifesto-word", {
+				color: "#f5f3ef",
+				stagger: 0.5,
+				ease: "none",
+				scrollTrigger: {
+					trigger: ".manifesto",
+					start: "top 75%",
+					end: "bottom 60%",
+					scrub: true,
+				},
+			});
+
+			// section heads + rows reveal
+			gsap.utils.toArray<HTMLElement>(".reveal").forEach((el) => {
+				gsap.from(el, {
+					y: 60,
+					opacity: 0,
+					duration: 1,
+					ease: "power3.out",
+					scrollTrigger: { trigger: el, start: "top 85%" },
+				});
+			});
+
+			// EXPERIENCE timeline progress line
+			gsap.from(".timeline-line", {
+				scaleY: 0,
+				transformOrigin: "top",
+				ease: "none",
+				scrollTrigger: {
+					trigger: ".timeline",
+					start: "top 70%",
+					end: "bottom 80%",
+					scrub: true,
+				},
+			});
+
+			// stat counters
+			gsap.utils.toArray<HTMLElement>(".counter").forEach((el) => {
+				const target = parseInt(el.dataset.count || "0", 10);
+				const o = { v: 0 };
+				gsap.to(o, {
+					v: target,
+					duration: 1.6,
+					ease: "power2.out",
+					scrollTrigger: { trigger: el, start: "top 85%" },
+					onUpdate: () => {
+						el.textContent = String(Math.round(o.v)).padStart(2, "0");
+					},
+				});
+			});
+
+			ScrollTrigger.refresh();
+		}, scope);
+
+		return () => ctx.revert();
+	}, []);
+
+	const yearsExp = "02";
 	const projectsCount = String(DATA.projects.length).padStart(2, "0");
-	const workCount = String(DATA.work.length).padStart(2, "0");
-	const skillsCount = String(DATA.skills.length).padStart(2, "0");
+	const stackCount = String(DATA.skills.length).padStart(2, "0");
 
 	return (
-		<main className="flex flex-col min-h-[100dvh] space-y-16 sm:space-y-20">
-			{/* ───── hero ─────────────────────────────────────────────── */}
-			<section id="hero" className="pt-2">
-				<div className="mx-auto w-full max-w-2xl">
-					<BlurFade delay={BLUR_FADE_DELAY}>
-						<div className="eyebrow mb-6 flex items-center gap-3 overflow-hidden">
-							<span className="inline-block size-1.5 shrink-0 rounded-full bg-[hsl(var(--accent))] animate-pulse" />
-							<span className="truncate">
-								Available for select projects
-								<span className="hidden sm:inline"> · {DATA.location}</span>
-							</span>
-						</div>
-					</BlurFade>
+		<main ref={scope} className="relative z-10 text-[#f5f3ef]">
+			{/* ════════════════════════════════ HERO ════════════════════════════ */}
+			<section
+				id="hero"
+				className="relative flex min-h-[100svh] flex-col justify-center px-6 sm:px-12"
+			>
+				<div className="hero-fade mb-8 flex items-center gap-3">
+					<span className="inline-block size-1.5 animate-pulse rounded-full bg-[hsl(222,96%,64%)]" />
+					<HudLabel>
+						Available for select projects · {DATA.location.split(",")[0]}
+					</HudLabel>
+				</div>
 
-					<div className="flex items-start justify-between gap-6">
-						<div className="flex-col flex flex-1 space-y-3">
-							<h1 className="text-4xl sm:text-6xl font-semibold tracking-[-0.04em] leading-[0.95]">
-								<span className="reveal-wipe inline-block">Hi, I&apos;m</span>{" "}
+				<h1 className="font-display text-[16vw] font-bold leading-[0.82] tracking-[-0.04em] sm:text-[13vw] lg:text-[11.5vw]">
+					<span className="hero-line block overflow-hidden">
+						<span className="block">{firstName}</span>
+					</span>
+					<span className="hero-line block overflow-hidden">
+						<span className="block text-transparent [-webkit-text-stroke:1.5px_rgba(245,243,239,0.55)]">
+							{lastName}
+						</span>
+					</span>
+				</h1>
+
+				<div className="mt-10 grid gap-8 sm:grid-cols-12 sm:items-end">
+					<p className="hero-fade max-w-md text-balance text-base leading-relaxed text-white/70 sm:col-span-7">
+						{DATA.description}
+					</p>
+					<div className="hero-fade flex gap-10 sm:col-span-5 sm:justify-end">
+						<div>
+							<div className="font-display text-3xl font-bold">{yearsExp}+</div>
+							<HudLabel>Years</HudLabel>
+						</div>
+						<div>
+							<div className="font-display text-3xl font-bold">{projectsCount}</div>
+							<HudLabel>Builds</HudLabel>
+						</div>
+						<div>
+							<div className="font-display text-3xl font-bold">{stackCount}</div>
+							<HudLabel>Tools</HudLabel>
+						</div>
+					</div>
+				</div>
+
+				<div className="hero-fade absolute bottom-8 left-6 flex items-center gap-3 sm:left-12">
+					<span className="h-8 w-px animate-pulse bg-white/30" />
+					<HudLabel>Scroll to enter</HudLabel>
+				</div>
+			</section>
+
+			{/* ═══════════════════════════════ MANIFESTO ═══════════════════════ */}
+			<section
+				id="about"
+				className="manifesto relative px-6 py-32 sm:px-12 sm:py-48"
+			>
+				<div className="mx-auto max-w-5xl">
+					<SectionTag index="01" title="Profile" />
+					<p className="font-display text-3xl font-medium leading-[1.25] tracking-[-0.02em] sm:text-5xl sm:leading-[1.2]">
+						{(
+							"Web developer & data-science grad student. I design and ship full-stack products end to end — interfaces, APIs, data pipelines — and I build with AI in the loop to move faster and smarter."
+						)
+							.split(" ")
+							.map((w, i) => (
 								<span
-									className="reveal-wipe inline-block text-[hsl(var(--accent))]"
-									style={{ animationDelay: "0.18s" }}
+									key={i}
+									className="manifesto-word"
+									style={{ color: "rgba(245,243,239,0.18)" }}
 								>
-									{firstName}
-								</span>
-								<span
-									className="reveal-wipe inline-block"
-									style={{ animationDelay: "0.32s" }}
-								>
-									.
-								</span>
-								<span className="caret align-baseline" aria-hidden />
-							</h1>
-
-							<BlurFadeText
-								className="max-w-[520px] text-base sm:text-lg text-muted-foreground leading-relaxed pt-2"
-								delay={BLUR_FADE_DELAY * 5}
-								text={DATA.description}
-							/>
-						</div>
-
-						<BlurFade delay={BLUR_FADE_DELAY * 2}>
-							<div className="relative shrink-0">
-								<Avatar className="size-20 sm:size-24 rounded-full ring-1 ring-border ring-offset-2 ring-offset-background">
-									<AvatarImage
-										alt={DATA.name}
-										src={DATA.avatarUrl}
-										className="object-cover"
-									/>
-									<AvatarFallback>{DATA.initials}</AvatarFallback>
-								</Avatar>
-								<span className="absolute -bottom-1 -right-1 size-3 rounded-full bg-emerald-500 ring-2 ring-background" />
-							</div>
-						</BlurFade>
-					</div>
-
-					{/* meta row */}
-					<BlurFade delay={BLUR_FADE_DELAY * 6}>
-						<div className="mt-10 grid grid-cols-3 gap-6 border-y border-border py-4">
-							<div>
-								<div className="eyebrow mb-1">Role</div>
-								<div className="text-sm font-medium">Web Developer</div>
-							</div>
-							<div>
-								<div className="eyebrow mb-1">Based in</div>
-								<div className="text-sm font-medium">Mindoro, PH</div>
-							</div>
-							<div>
-								<div className="eyebrow mb-1">Years</div>
-								<div className="text-sm font-medium tabular">2023 — Now</div>
-							</div>
-						</div>
-					</BlurFade>
-				</div>
-			</section>
-
-			{/* ───── about ────────────────────────────────────────────── */}
-			<section id="about">
-				<BlurFade delay={BLUR_FADE_DELAY * 7}>
-					<SectionHeader index="01" title="About" />
-				</BlurFade>
-				<BlurFade delay={BLUR_FADE_DELAY * 8}>
-					<Markdown className="prose max-w-full text-pretty font-sans text-[15px] leading-relaxed text-foreground/80 dark:prose-invert">
-						{DATA.summary}
-					</Markdown>
-				</BlurFade>
-			</section>
-
-			{/* ───── work ─────────────────────────────────────────────── */}
-			<section id="work">
-				<div className="flex min-h-0 flex-col">
-					<BlurFade delay={BLUR_FADE_DELAY * 9}>
-						<SectionHeader index="02" title="Experience" caption={`${workCount} positions`} />
-					</BlurFade>
-					<div className="flex flex-col gap-y-2">
-						{DATA.work.map((work, id) => (
-							<BlurFade
-								key={work.company}
-								delay={BLUR_FADE_DELAY * 10 + id * 0.05}
-							>
-								<ResumeCard
-									key={work.company}
-									logoUrl={work.logoUrl}
-									altText={work.company}
-									title={work.company}
-									subtitle={work.title}
-									href={work.href}
-									badges={work.badges}
-									period={`${work.start} — ${work.end ?? "Present"}`}
-									description={work.description}
-								/>
-							</BlurFade>
-						))}
-					</div>
-				</div>
-			</section>
-
-			{/* ───── education ────────────────────────────────────────── */}
-			<section id="education">
-				<div className="flex min-h-0 flex-col">
-					<BlurFade delay={BLUR_FADE_DELAY * 11}>
-						<SectionHeader index="03" title="Education" />
-					</BlurFade>
-					<div className="flex flex-col gap-y-2">
-						{DATA.education.map((education, id) => (
-							<BlurFade
-								key={education.school}
-								delay={BLUR_FADE_DELAY * 12 + id * 0.05}
-							>
-								<ResumeCard
-									key={education.school}
-									href={education.href}
-									logoUrl={education.logoUrl}
-									altText={education.school}
-									title={education.school}
-									subtitle={education.degree}
-									period={`${education.start} — ${education.end}`}
-								/>
-							</BlurFade>
-						))}
-					</div>
-				</div>
-			</section>
-
-			{/* ───── skills ───────────────────────────────────────────── */}
-			<section id="skills">
-				<div className="flex min-h-0 flex-col">
-					<BlurFade delay={BLUR_FADE_DELAY * 13}>
-						<SectionHeader index="04" title="Stack" caption={`${skillsCount} tools`} />
-					</BlurFade>
-					<BlurFade delay={BLUR_FADE_DELAY * 14}>
-						<p className="text-[15px] leading-loose text-foreground/85 flex flex-wrap gap-y-0">
-							{DATA.skills.map((skill, i) => (
-								<span key={skill} className="whitespace-nowrap">
-									<span className="hover:text-[hsl(var(--accent))] transition-colors duration-200">
-										{skill}
-									</span>
-									{i < DATA.skills.length - 1 && (
-										<span className="text-muted-foreground/60 px-1.5">+</span>
-									)}
+									{w}{" "}
 								</span>
 							))}
-						</p>
-					</BlurFade>
+					</p>
 				</div>
 			</section>
 
-			{/* ───── projects ─────────────────────────────────────────── */}
-			<section id="projects">
-				<BlurFade delay={BLUR_FADE_DELAY * 15}>
-					<SectionHeader
-						index="05"
-						title="Selected Work"
-						caption={`${projectsCount} projects`}
-					/>
-				</BlurFade>
-				<BlurFade delay={BLUR_FADE_DELAY * 16}>
-					<p className="text-[15px] leading-relaxed text-foreground/70 max-w-[560px] mb-8">
-						A handful of things I&apos;ve shipped — full-stack web apps,
-						platforms, and a couple experiments. Click any card to learn more.
-					</p>
-				</BlurFade>
-				<div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-					{DATA.projects.map((project, id) => (
-						<BlurFade
-							key={project.title}
-							delay={BLUR_FADE_DELAY * 17 + id * 0.04}
+			{/* ═══════════════════════════════ SKILLS MARQUEE ══════════════════ */}
+			<section className="relative overflow-hidden border-y border-white/10 py-6">
+				<div className="marquee flex w-max gap-8 whitespace-nowrap">
+					{[...DATA.skills, ...DATA.skills].map((s, i) => (
+						<span
+							key={i}
+							className="font-display text-2xl font-medium text-white/30 sm:text-4xl"
 						>
-							<ProjectCard
-								index={String(id + 1).padStart(2, "0")}
-								href={project.href}
-								key={project.title}
-								title={project.title}
-								description={project.description}
-								dates={project.dates}
-								tags={project.technologies}
-								image={project.image}
-								video={project.video}
-								links={project.links}
-							/>
-						</BlurFade>
+							{s}
+							<span className="px-4 text-[hsl(222,96%,64%)]">✦</span>
+						</span>
 					))}
 				</div>
 			</section>
 
-			{/* ───── trainings ────────────────────────────────────────── */}
-			<section id="hackathons">
-				<BlurFade delay={BLUR_FADE_DELAY * 18}>
-					<SectionHeader index="06" title="Trainings & Certifications" />
-				</BlurFade>
-				<BlurFade delay={BLUR_FADE_DELAY * 19}>
-					<p className="text-[15px] leading-relaxed text-foreground/70 max-w-[560px] mb-8">
-						After graduating, I joined training programs to deepen my software
-						engineering and cloud computing fundamentals.
-					</p>
-				</BlurFade>
-				<BlurFade delay={BLUR_FADE_DELAY * 20}>
-					<ul className="ml-1.5 border-l border-border">
-						{DATA.trainings.map((project, id) => (
-							<BlurFade
-								key={project.title + project.dates}
-								delay={BLUR_FADE_DELAY * 21 + id * 0.05}
-							>
-								<HackathonCard
-									title={project.title}
-									description={project.description}
-									location={project.location}
-									dates={project.dates}
-									image={project.image}
-									links={project.links}
-								/>
-							</BlurFade>
+			{/* ═══════════════════════════════ EXPERIENCE ══════════════════════ */}
+			<section id="experience" className="relative px-6 py-32 sm:px-12 sm:py-48">
+				<div className="mx-auto max-w-5xl">
+					<SectionTag index="02" title="Career Log" />
+					<div className="timeline relative pl-8 sm:pl-16">
+						<div className="timeline-line absolute left-1.5 top-2 h-full w-px bg-gradient-to-b from-[hsl(222,96%,64%)] via-white/30 to-transparent sm:left-3" />
+						{DATA.work.map((w, i) => (
+							<div key={i} className="reveal relative mb-16 last:mb-0">
+								<span className="absolute -left-[34px] top-2 size-2.5 rounded-full bg-[hsl(222,96%,64%)] ring-4 ring-[#070809] sm:-left-[58px]" />
+								<HudLabel>
+									{w.start} — {w.end ?? "Present"}
+								</HudLabel>
+								<h3 className="mt-2 font-display text-2xl font-semibold tracking-tight sm:text-4xl">
+									{w.title}
+								</h3>
+								<div className="mt-1 text-sm text-[hsl(222,96%,64%)]">
+									{w.company}
+								</div>
+								<p className="mt-4 max-w-2xl text-sm leading-relaxed text-white/55">
+									{w.description}
+								</p>
+							</div>
 						))}
-					</ul>
-				</BlurFade>
+					</div>
+				</div>
 			</section>
 
-			{/* ───── contact ──────────────────────────────────────────── */}
-			<section id="contact">
-				<BlurFade delay={BLUR_FADE_DELAY * 22}>
-					<SectionHeader index="07" title="Contact" />
-				</BlurFade>
-				<BlurFade delay={BLUR_FADE_DELAY * 23}>
-					<div className="grid sm:grid-cols-5 gap-6 items-start">
-						<div className="sm:col-span-3 space-y-3">
-							<h3 className="text-2xl sm:text-3xl font-semibold tracking-[-0.02em] leading-tight">
-								Have an idea? <br />
-								<span className="text-[hsl(var(--accent))]">Let&apos;s build it.</span>
-							</h3>
-							<p className="text-[15px] leading-relaxed text-foreground/70 max-w-[420px]">
-								Want to chat? Shoot me a DM{" "}
-								<Link
-									href={DATA.contact.social.X.url}
-									className="link-underline text-foreground font-medium"
-								>
-									on Twitter
-								</Link>{" "}
-								or send an email. I&apos;ll respond whenever I can — I ignore
-								all soliciting.
-							</p>
+			{/* ═══════════════════════════════ PROJECTS (interactive index) ════ */}
+			<section id="projects" className="relative px-6 py-32 sm:px-12 sm:py-48">
+				<div className="mx-auto max-w-6xl">
+					<div className="reveal mb-10 flex items-end justify-between">
+						<SectionTag index="03" title="Selected Builds" />
+						<HudLabel>Hover any tile</HudLabel>
+					</div>
+					<ProjectBento />
+				</div>
+			</section>
+
+			{/* ═══════════════════════════════ CONTACT ═════════════════════════ */}
+			<section
+				id="contact"
+				className="relative flex min-h-[90svh] flex-col justify-center px-6 py-32 sm:px-12"
+			>
+				<div className="mx-auto w-full max-w-5xl">
+					<SectionTag index="04" title="Open Signal" />
+					<h2 className="reveal font-display text-[12vw] font-bold leading-[0.85] tracking-[-0.04em] sm:text-[8vw]">
+						LET&apos;S
+						<br />
+						<span className="text-[hsl(222,96%,64%)]">BUILD IT.</span>
+					</h2>
+
+					<div className="reveal mt-16 grid gap-10 border-t border-white/10 pt-10 sm:grid-cols-3">
+						<div>
+							<HudLabel>Email</HudLabel>
+							<Link
+								href={`mailto:${DATA.contact.email}`}
+								className="mt-2 block text-lg font-medium hover:text-[hsl(222,96%,64%)]"
+								data-hover
+							>
+								{DATA.contact.email}
+							</Link>
 						</div>
-						<div className="sm:col-span-2 space-y-3 sm:border-l sm:border-border sm:pl-6">
-							<div>
-								<div className="eyebrow mb-1">Email</div>
-								<Link
-									href={`mailto:${DATA.contact.email}`}
-									className="link-underline text-sm font-medium break-all"
-								>
-									{DATA.contact.email}
-								</Link>
+						<div>
+							<HudLabel>Phone</HudLabel>
+							<div className="mt-2 text-lg font-medium tabular-nums">
+								{DATA.contact.phone}
 							</div>
-							<div>
-								<div className="eyebrow mb-1">Phone</div>
-								<div className="text-sm font-medium tabular">
-									{DATA.contact.phone}
-								</div>
-							</div>
-							<div>
-								<div className="eyebrow mb-1">Elsewhere</div>
-								<div className="flex flex-wrap gap-x-3 gap-y-1 text-sm">
-									{Object.entries(DATA.contact.social)
-										.filter(([_, s]) => s.navbar)
-										.map(([name, social]) => (
-											<Link
-												key={name}
-												href={social.url}
-												className="link-underline font-medium"
-											>
-												{name}
-											</Link>
-										))}
-								</div>
+						</div>
+						<div>
+							<HudLabel>Channels</HudLabel>
+							<div className="mt-2 flex flex-wrap gap-4">
+								{Object.entries(DATA.contact.social)
+									.filter(([, s]) => s.navbar)
+									.map(([name, s]) => (
+										<Link
+											key={name}
+											href={s.url}
+											target="_blank"
+											className="text-lg font-medium hover:text-[hsl(222,96%,64%)]"
+											data-hover
+										>
+											{name}
+										</Link>
+									))}
 							</div>
 						</div>
 					</div>
-				</BlurFade>
-			</section>
 
-			{/* ───── colophon ─────────────────────────────────────────── */}
-			<BlurFade delay={BLUR_FADE_DELAY * 24}>
-				<footer className="pt-8 border-t border-border flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-					<span>© {new Date().getFullYear()} Marnel Valentin</span>
-					<span className="hidden sm:inline">
-						Set in Geist · Built with Next.js
-					</span>
-					<span>End of document</span>
-				</footer>
-			</BlurFade>
+					<footer className="mt-24 flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.25em] text-white/30">
+						<span>© {new Date().getFullYear()} Marnel Valentin</span>
+						<span className="hidden sm:inline">WebGL · GSAP · Next.js</span>
+						<span>End transmission</span>
+					</footer>
+				</div>
+			</section>
 		</main>
 	);
 }

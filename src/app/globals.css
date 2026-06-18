@@ -102,6 +102,22 @@
     font-family: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
   }
 
+  .font-display {
+    font-family: var(--font-display), var(--font-sans), system-ui, sans-serif;
+  }
+
+  /* infinite skills marquee */
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  .marquee {
+    animation: marquee 32s linear infinite;
+  }
+  .marquee:hover {
+    animation-play-state: paused;
+  }
+
   /* very subtle paper grain — SVG noise, 3% */
   .grain::before {
     content: "";
@@ -142,9 +158,9 @@
 
   .caret {
     display: inline-block;
-    width: 0.55em;
-    height: 1em;
-    margin-left: 0.08em;
+    width: 2px;
+    height: 0.85em;
+    margin-left: 0.1em;
     background: hsl(var(--accent));
     transform: translateY(0.1em);
     animation: caret-blink 1.05s steps(1) infinite;
