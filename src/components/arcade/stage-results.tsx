@@ -54,10 +54,10 @@ export default function StageResults({
 				</div>
 
 				<div className="mt-12 flex flex-wrap gap-6 border-t border-white/10 pt-6">
-					<button onClick={onNext} className="font-mono text-xs uppercase tracking-[0.3em] text-white/70 hover:text-[hsl(222,96%,64%)]">
+					<button type="button" onClick={onNext} className="font-mono text-xs uppercase tracking-[0.3em] text-white/70 hover:text-[hsl(222,96%,64%)]">
 						↻ Next Fighter
 					</button>
-					<button onClick={onContact} className="font-mono text-xs uppercase tracking-[0.3em] text-white/70 hover:text-[hsl(222,96%,64%)]">
+					<button type="button" onClick={onContact} className="font-mono text-xs uppercase tracking-[0.3em] text-white/70 hover:text-[hsl(222,96%,64%)]">
 						Enter the Dojo → Contact
 					</button>
 				</div>

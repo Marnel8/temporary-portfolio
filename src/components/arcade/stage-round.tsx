@@ -13,6 +13,7 @@ import { ArcadeHud } from "./arcade-hud";
 
 const ACCENT = "#2f6bff";
 const HOT = "#ff5a3c";
+const CAM_BASE = { x: 0, y: 1 };
 
 function Loop({ cinematic, onDone }: { cinematic: boolean; onDone: (r: MatchResult) => void }) {
 	const acc = useRef(0);
@@ -39,8 +40,8 @@ function Loop({ cinematic, onDone }: { cinematic: boolean; onDone: (r: MatchResu
 
 		// camera shake on hit
 		const shake = s.hitFlash * 0.12;
-		camera.position.x = (Math.random() - 0.5) * shake;
-		camera.position.y = 1 + (Math.random() - 0.5) * shake;
+		camera.position.x = CAM_BASE.x + (Math.random() - 0.5) * shake;
+		camera.position.y = CAM_BASE.y + (Math.random() - 0.5) * shake;
 
 		if (s.over && !finished.current) {
 			finished.current = true;

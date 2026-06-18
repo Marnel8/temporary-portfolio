@@ -67,6 +67,7 @@ export default function StageSelect({ onPick }: { onPick: (index: number) => voi
 						))}
 					</div>
 					<button
+						type="button"
 						onClick={() => onPick(f.index)}
 						className="mt-8 w-full -skew-x-6 bg-[hsl(222,96%,64%)] py-3 font-mono text-xs font-bold uppercase tracking-[0.3em] text-[#070809] transition hover:brightness-110"
 					>

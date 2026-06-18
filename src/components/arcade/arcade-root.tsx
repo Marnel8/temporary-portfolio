@@ -31,6 +31,8 @@ export default function ArcadeRoot({ children }: { children: React.ReactNode }) 
 
 		const hasTouch = "ontouchstart" in window;
 		fightStore.mode = detectMode(hasTouch);
+		const pads = navigator.getGamepads?.() ?? [];
+		if (Array.from(pads).some((p) => p)) fightStore.mode = "gamepad";
 
 		const down = (e: KeyboardEvent) => {
 			liveKeys.add(e.code);
@@ -57,7 +59,20 @@ export default function ArcadeRoot({ children }: { children: React.ReactNode }) 
 		return () => { document.body.style.overflow = ""; };
 	}, [state.stage]);
 
-	if (state.stage === "classic") return <>{children}</>;
+	if (state.stage === "classic") {
+		return (
+			<>
+				{children}
+				<button
+					type="button"
+					onClick={() => dispatch({ type: "ENTER_ARCADE" })}
+					className="fixed bottom-5 right-5 z-50 border border-white/20 bg-black/50 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.3em] text-white/60 backdrop-blur transition hover:border-white/50 hover:text-white"
+				>
+					▸ Enter Arcade
+				</button>
+			</>
+		);
+	}
 
 	return (
 		<>
@@ -89,6 +104,7 @@ export default function ArcadeRoot({ children }: { children: React.ReactNode }) 
 
 			{/* persistent escape hatch */}
 			<button
+				type="button"
 				onClick={() => dispatch({ type: "EXIT_TO_CLASSIC" })}
 				className="fixed bottom-5 right-5 z-50 border border-white/20 bg-black/50 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.3em] text-white/60 backdrop-blur transition hover:border-white/50 hover:text-white"
 			>
