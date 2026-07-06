@@ -111,7 +111,8 @@ event so gate and hero never overlap.
    status). Scroll cue bottom-center.
 2. **ABOUT** — `DATA.summary` + `DATA.description`; `/photos/about.png` as a
    grayscale/dither free-floating cutout; status chips (MS in progress,
-   security focus) in mono.
+   security focus) in mono; the full `DATA.skills` list as a plain mono
+   tag list under a `> ls /skills` header (replaces the old radar).
 3. **OPS LOG (experience + education)** — `DATA.work` and `DATA.education`
    rendered as terminal log entries: dates, company/school, role, description.
    No cards; hairline rules and mono type.
