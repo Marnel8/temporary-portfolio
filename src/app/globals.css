@@ -209,6 +209,12 @@
   html[data-deck="on"] [data-slide].deck-active {
     display: flex;
   }
+  /* slides receive programmatic focus after transitions; the default
+     outline draws a bright box around the whole section — suppress it
+     (position feedback comes from the dots + counter instead) */
+  html[data-deck="on"] [data-slide]:focus {
+    outline: none;
+  }
   /* content that only makes sense in scroll mode (HTML project index) */
   html[data-deck="on"] [data-deck-hide] {
     display: none;
