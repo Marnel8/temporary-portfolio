@@ -97,20 +97,27 @@ export default function SlideDeck({ children }: { children: React.ReactNode }) {
 		ensureSplit(inn);
 		// "block" units scatter/fade whole: canvases, dynamic text, chips.
 		// .deck-block is the marker for components that only take className.
+		// Flat element arrays, never NodeLists — GSAP throws on an empty
+		// NodeList nested in a target array, and a slide with no glyphs
+		// (e.g. projects: all blocks) must still transition cleanly.
 		const BLOCK_SEL = '[data-explode="block"], .deck-block';
-		const outGlyphs = out.querySelectorAll<HTMLElement>(".deck-glyph");
-		const outBlocks = out.querySelectorAll<HTMLElement>(BLOCK_SEL);
-		const innGlyphs = inn.querySelectorAll<HTMLElement>(".deck-glyph");
-		const innBlocks = inn.querySelectorAll<HTMLElement>(BLOCK_SEL);
+		const outGlyphs = Array.from(out.querySelectorAll<HTMLElement>(".deck-glyph"));
+		const outBlocks = Array.from(out.querySelectorAll<HTMLElement>(BLOCK_SEL));
+		const innGlyphs = Array.from(inn.querySelectorAll<HTMLElement>(".deck-glyph"));
+		const innBlocks = Array.from(inn.querySelectorAll<HTMLElement>(BLOCK_SEL));
+		const allGlyphs = [...outGlyphs, ...innGlyphs];
 
 		const tl = gsap.timeline({
 			onComplete: () => {
 				lockedRef.current = false;
 			},
 		});
+		// explicit positions so empty groups can't shift the schedule:
+		// 0.00–0.50 explode out · 0.45 swap+rain · 0.50–1.05 assemble in
+		if (allGlyphs.length) tl.set(allGlyphs, { willChange: "transform" }, 0);
 		// 1 · outgoing text explodes into scattered glyphs
-		tl.set([outGlyphs, innGlyphs], { willChange: "transform" })
-			.to(
+		if (outGlyphs.length)
+			tl.to(
 				outGlyphs,
 				{
 					x: () => gsap.utils.random(-520, 520),
@@ -122,20 +129,22 @@ export default function SlideDeck({ children }: { children: React.ReactNode }) {
 					stagger: { each: 0.005, from: "random" },
 				},
 				0
-			)
-			.to(outBlocks, { opacity: 0, scale: 0.92, duration: 0.4, ease: "power2.in" }, 0)
-			// 2 · midpoint: rain burst covers the swap
-			.add(() => {
-				triggerRain(true);
-				out.classList.remove("deck-active");
-				inn.classList.add("deck-active");
-				// reset the outgoing slide for its next entrance
-				gsap.set(outGlyphs, { x: 0, y: 0, rotation: 0, opacity: 1 });
-				gsap.set(outBlocks, { opacity: 1, scale: 1 });
-				inn.focus({ preventScroll: true });
-			}, ">-0.05")
-			// 3 · incoming glyphs assemble from scatter
-			.fromTo(
+			);
+		if (outBlocks.length)
+			tl.to(outBlocks, { opacity: 0, scale: 0.92, duration: 0.4, ease: "power2.in" }, 0);
+		// 2 · midpoint: rain burst covers the swap
+		tl.add(() => {
+			triggerRain(true);
+			out.classList.remove("deck-active");
+			inn.classList.add("deck-active");
+			// reset the outgoing slide for its next entrance
+			if (outGlyphs.length) gsap.set(outGlyphs, { x: 0, y: 0, rotation: 0, opacity: 1 });
+			if (outBlocks.length) gsap.set(outBlocks, { opacity: 1, scale: 1 });
+			inn.focus({ preventScroll: true });
+		}, 0.45);
+		// 3 · incoming glyphs assemble from scatter
+		if (innGlyphs.length)
+			tl.fromTo(
 				innGlyphs,
 				{
 					x: () => gsap.utils.random(-420, 420),
@@ -151,15 +160,17 @@ export default function SlideDeck({ children }: { children: React.ReactNode }) {
 					duration: 0.55,
 					ease: "power3.out",
 					stagger: { each: 0.004, from: "random" },
-				}
-			)
-			.fromTo(
+				},
+				0.5
+			);
+		if (innBlocks.length)
+			tl.fromTo(
 				innBlocks,
 				{ opacity: 0, scale: 0.95 },
 				{ opacity: 1, scale: 1, duration: 0.45, ease: "power2.out" },
-				"<"
-			)
-			.set([outGlyphs, innGlyphs], { willChange: "auto" });
+				0.5
+			);
+		if (allGlyphs.length) tl.set(allGlyphs, { willChange: "auto" }, 1.05);
 		// belt-and-braces unlock in case the tab is backgrounded mid-tween
 		setTimeout(() => (lockedRef.current = false), TRANSITION_LOCK_MS);
 	};
