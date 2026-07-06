@@ -86,18 +86,19 @@ export default async function Blog({
           }),
         }}
       />
-      <h1 className="title font-medium text-2xl tracking-tighter max-w-[650px]">
+      <h1 className="max-w-[650px] font-mono text-2xl font-bold uppercase tracking-tight text-pale">
         {post.metadata.title}
       </h1>
       <div className="flex justify-between items-center mt-2 mb-8 text-sm max-w-[650px]">
         <Suspense fallback={<p className="h-5" />}>
-          <p className="text-sm text-neutral-600 dark:text-neutral-400">
+          <p className="font-mono text-xs text-phos/60">
             {formatDate(post.metadata.publishedAt)}
           </p>
         </Suspense>
       </div>
+      {/* prose body stays Inter (font-sans) for readability; headings/links go phosphor */}
       <article
-        className="prose dark:prose-invert"
+        className="prose prose-invert font-sans prose-headings:font-mono prose-headings:uppercase prose-headings:tracking-tight prose-a:text-phos prose-code:text-pale prose-hr:border-phos/15"
         dangerouslySetInnerHTML={{ __html: post.source }}
       ></article>
     </section>
