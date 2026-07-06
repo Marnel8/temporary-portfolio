@@ -1,6 +1,7 @@
 "use client";
 
 import { useLayoutEffect } from "react";
+import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { DATA } from "@/data/resume";
@@ -163,6 +164,113 @@ export default function Home() {
 					{/* scroll cue */}
 					<div className="absolute bottom-10 left-1/2 z-10 -translate-x-1/2 font-mono text-[10px] tracking-[0.4em] text-phos/50">
 						<span className="scroll-cue">▼ SCROLL</span>
+					</div>
+				</section>
+
+				{/* ── [01] OPERATOR PROFILE (about) ─────────────────────── */}
+				<section id="about" data-rain className="relative mx-auto max-w-5xl px-6 py-28 sm:py-36">
+					<SectionTag index="01" title="operator profile" />
+					<div className="grid items-center gap-14 md:grid-cols-[1fr_minmax(220px,320px)]">
+						<div>
+							<TypedLog
+								lines={["cat /usr/marnel/about.txt"]}
+								className="mb-6 font-mono text-xs text-phos/60"
+							/>
+							<p className="reveal max-w-prose font-mono text-sm leading-relaxed text-pale/85">
+								{DATA.summary}
+							</p>
+							<div className="reveal mt-8 flex flex-wrap gap-3">
+								<Chip>MS data science — in progress</Chip>
+								<Chip>BS information technology · 2019–2023</Chip>
+								<Chip>{DATA.location}</Chip>
+							</div>
+							{/* capability list — plain mono tags, no meters */}
+							<div className="reveal mt-10">
+								<div className="mb-4 font-mono text-[10px] uppercase tracking-[0.3em] text-phos/50">
+									&gt; ls /skills
+								</div>
+								<ul className="flex max-w-prose flex-wrap gap-x-4 gap-y-2 font-mono text-[11px] text-pale/70">
+									{DATA.skills.map((skill) => (
+										<li key={skill} className="before:mr-1 before:text-phos/50 before:content-['·']">
+											{skill}
+										</li>
+									))}
+								</ul>
+							</div>
+						</div>
+						{/* free-floating dithered cutout — deliberately no panel/border */}
+						<DitherPortrait
+							src="/photos/about.png"
+							cols={96}
+							dot={5}
+							opacity={0.85}
+							className="reveal mx-auto h-auto w-full max-w-[300px]"
+							alt="Marnel holding a laptop"
+						/>
+					</div>
+				</section>
+
+				{/* ── [02] OPS LOG (experience) + [03] TRAINING (education) ── */}
+				<section id="ops" data-rain className="mx-auto max-w-5xl px-6 py-28">
+					<SectionTag index="02" title="ops log — experience" />
+					<ol className="space-y-12">
+						{DATA.work.map((job) => (
+							<li
+								key={job.company + job.start}
+								className="reveal grid gap-2 border-l border-phos/20 pl-6 sm:grid-cols-[190px_1fr] sm:gap-8"
+							>
+								{/* timestamp column, log-file style */}
+								<div className="font-mono text-[11px] uppercase tracking-[0.15em] text-phos/50">
+									[{job.start} — {job.end}]
+								</div>
+								<div>
+									<h3 className="font-mono text-sm font-bold uppercase tracking-[0.08em] text-pale">
+										{job.title}
+									</h3>
+									<div className="mt-1 font-mono text-xs text-phos/70">
+										{job.href ? (
+											<Link href={job.href} target="_blank" className="transition-colors hover:text-phos">
+												{job.company}
+											</Link>
+										) : (
+											job.company
+										)}
+										<span className="text-phos/40"> · {job.location}</span>
+									</div>
+									<p className="mt-3 max-w-prose font-mono text-xs leading-relaxed text-pale/70">
+										{job.description}
+									</p>
+								</div>
+							</li>
+						))}
+					</ol>
+
+					<div className="mt-24">
+						<SectionTag index="03" title="training — education" />
+						<ol className="space-y-8">
+							{DATA.education.map((edu) => (
+								<li
+									key={edu.degree}
+									className="reveal grid gap-2 border-l border-phos/20 pl-6 sm:grid-cols-[190px_1fr] sm:gap-8"
+								>
+									<div className="font-mono text-[11px] uppercase tracking-[0.15em] text-phos/50">
+										[{edu.start} — {edu.end}]
+									</div>
+									<div>
+										<h3 className="font-mono text-sm font-bold uppercase tracking-[0.08em] text-pale">
+											{edu.degree}
+										</h3>
+										<Link
+											href={edu.href}
+											target="_blank"
+											className="mt-1 inline-block font-mono text-xs text-phos/70 transition-colors hover:text-phos"
+										>
+											{edu.school}
+										</Link>
+									</div>
+								</li>
+							))}
+						</ol>
 					</div>
 				</section>
 
