@@ -16,12 +16,13 @@ import { useFx } from "./fx-context";
    whole thing is inert when CRT FX are toggled off.
    ═══════════════════════════════════════════════════════════════════ */
 
-type Listener = () => void;
+type Listener = (force?: boolean) => void;
 const listeners = new Set<Listener>();
 
-/** Request a rain burst. Safe to call from anywhere (no-op on server). */
-export function triggerRain() {
-	listeners.forEach((fn) => fn());
+/** Request a rain burst. `force` bypasses the rate limit (used by the
+    slide deck so every transition gets its burst). No-op on server. */
+export function triggerRain(force = false) {
+	listeners.forEach((fn) => fn(force));
 }
 
 const GLYPHS =
@@ -85,10 +86,10 @@ export default function RainOverlay() {
 			raf = requestAnimationFrame(frame);
 		};
 
-		const start = () => {
+		const start = (force = false) => {
 			if (!fxRef.current) return;
 			const now = performance.now();
-			if (now - lastBurst < MIN_GAP_MS) return;
+			if (!force && now - lastBurst < MIN_GAP_MS) return;
 			lastBurst = now;
 			burstStart = now;
 

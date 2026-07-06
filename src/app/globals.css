@@ -187,6 +187,37 @@
     display: inline-block;
     animation: cue-float 2.4s ease-in-out infinite;
   }
+
+  /* ── Slide deck (desktop "channel switch" mode) ────────────────
+     html[data-deck="on"] is stamped by slide-deck.tsx after mount.
+     Sections become stacked fullscreen slides; only .deck-active
+     is displayed. Scroll mode is completely unaffected.           */
+  html[data-deck="on"] body {
+    overflow: hidden;
+  }
+  html[data-deck="on"] [data-slide] {
+    position: fixed;
+    inset: 0;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+    /* tighter vertical padding than scroll mode so tall slides fit */
+    padding-top: 4.5rem;
+    padding-bottom: 4.5rem;
+  }
+  html[data-deck="on"] [data-slide].deck-active {
+    display: flex;
+  }
+  /* content that only makes sense in scroll mode (HTML project index) */
+  html[data-deck="on"] [data-deck-hide] {
+    display: none;
+  }
+  /* glyph spans created by the deck's text splitter */
+  .deck-glyph {
+    display: inline-block;
+    white-space: pre;
+  }
 }
 
 h3 code {
