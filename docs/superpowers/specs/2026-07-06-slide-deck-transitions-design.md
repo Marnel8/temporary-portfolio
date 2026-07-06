@@ -72,8 +72,9 @@ Client component wrapping the six sections. Owns:
      slide changes still get their burst)
   4. swap: outgoing `display: none`, incoming `display: flex`
   5. incoming: glyphs assemble inward (reverse scatter), blocks scale in;
-     `TypedLog` retypes automatically (its IntersectionObserver can only fire
-     once the slide is displayed)
+     `TypedLog` types on the slide's first display (its IntersectionObserver
+     can only fire once the slide is displayed; on later re-entries the log
+     shows completed — it types once per page load, as today)
   6. unlock
 - **Slide sizing:** in deck mode every slide is `position: fixed, inset: 0`,
   full viewport, content vertically centered; inactive slides `display: none`.
@@ -99,14 +100,14 @@ Structural only:
   triggers it. The deck's assemble timelines own all entrances in deck mode.
   The hero `bootdone` intro is unchanged (runs in both modes).
 
-### HUD additions (`hud-frame.tsx`)
+### Deck chrome (rendered by `slide-deck.tsx`)
 
-- Right edge, vertically centered: a column of small clickable mono dots
-  (`■`/`·`), one per slide, current highlighted — jump navigation.
-- Bottom-left status text swaps `SYS.READY` → `SLIDE 0N / 06` in deck mode.
-- Both render only under `html[data-deck="on"]` (CSS-gated, no re-render), with
-  a tiny custom event (`deckchange`, carrying the active index) keeping the
-  dots/counter in sync with the deck.
+- Right edge, vertically centered: a column of small clickable square dots,
+  one per slide, current highlighted — jump navigation.
+- Bottom-left: `SLIDE 0N / 06` counter, taking the spot of the HUD's
+  `SYS.READY` text (which hides itself under `html[data-deck="on"]` via CSS).
+- Both live inside `SlideDeck` (it already owns the active index), so no
+  cross-component event wiring is needed.
 
 ## Interaction details
 
@@ -114,8 +115,6 @@ Structural only:
   Observer ignores pointer-drag that starts on the drum canvas
   (`closest("canvas")` check) so a horizontal drum drag can't be read as a
   swipe.
-- Anchor navigation (`#projects` links, HUD logomark) maps to `goTo(slide)` in
-  deck mode.
 - Focus: after a transition, the incoming section receives focus
   (`tabindex="-1"`) so keyboard users aren't stranded.
 
