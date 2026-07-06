@@ -45,7 +45,7 @@ const CORNER_BR = ["SECURITY-LEANING", "AI-ASSISTED DEV"] as const;
 /* numbered section header, e.g. "[02] OPS LOG" */
 function SectionTag({ index, title }: { index: string; title: string }) {
 	return (
-		<div className="reveal mb-12 flex items-center gap-4 font-mono">
+		<div data-explode="block" className="reveal mb-12 flex items-center gap-4 font-mono">
 			<span className="text-[11px] tracking-[0.2em] text-phos">[{index}]</span>
 			<span className="h-px w-12 bg-phos/25" />
 			<h2 className="text-[11px] uppercase tracking-[0.35em] text-phos/60">
@@ -145,23 +145,23 @@ export default function Home() {
 						cols={120}
 						dot={5}
 						opacity={0.32}
-						className="pointer-events-none absolute left-1/2 top-1/2 h-[84vh] w-auto max-w-none -translate-x-1/2 -translate-y-1/2"
+						className="deck-block pointer-events-none absolute left-1/2 top-1/2 h-[84vh] w-auto max-w-none -translate-x-1/2 -translate-y-1/2"
 					/>
 
 					{/* four glitch-cycling corner labels */}
-					<div className="pointer-events-none absolute inset-x-6 top-20 z-10 flex justify-between font-mono text-[10px] tracking-[0.3em] text-phos/60 sm:inset-x-14">
+					<div data-explode="block" className="pointer-events-none absolute inset-x-6 top-20 z-10 flex justify-between font-mono text-[10px] tracking-[0.3em] text-phos/60 sm:inset-x-14">
 						<ScrambleCycle words={CORNER_TL} />
 						<ScrambleCycle words={CORNER_TR} startDelay={950} />
 					</div>
-					<div className="pointer-events-none absolute inset-x-6 bottom-24 z-10 flex justify-between font-mono text-[10px] tracking-[0.3em] text-phos/60 sm:inset-x-14">
+					<div data-explode="block" className="pointer-events-none absolute inset-x-6 bottom-24 z-10 flex justify-between font-mono text-[10px] tracking-[0.3em] text-phos/60 sm:inset-x-14">
 						<ScrambleCycle words={CORNER_BL} startDelay={1900} />
 						<ScrambleCycle words={CORNER_BR} startDelay={2850} />
 					</div>
 
 					{/* the name — massive, blocky, solid fills */}
 					<h1 className="hero-name relative z-10 text-center font-display uppercase leading-[0.88] text-pale">
-						<span className="block text-[clamp(3rem,12.5vw,10rem)]">Marnel</span>
-						<span className="phos-glow block text-[clamp(3rem,12.5vw,10rem)] text-phos">
+						<span data-explode="chars" className="block text-[clamp(3rem,12.5vw,10rem)]">Marnel</span>
+						<span data-explode="chars" className="phos-glow block text-[clamp(3rem,12.5vw,10rem)] text-phos">
 							Valentin
 						</span>
 					</h1>
@@ -170,11 +170,11 @@ export default function Home() {
 					<TypedLog
 						lines={LOG_LINES}
 						startDelay={350}
-						className="relative z-10 mt-10 w-full max-w-xl font-mono text-[11px] text-phos/80 sm:text-xs"
+						className="deck-block relative z-10 mt-10 w-full max-w-xl font-mono text-[11px] text-phos/80 sm:text-xs"
 					/>
 
 					{/* scroll cue */}
-					<div className="absolute bottom-10 left-1/2 z-10 -translate-x-1/2 font-mono text-[10px] tracking-[0.4em] text-phos/50">
+					<div data-explode="block" className="absolute bottom-10 left-1/2 z-10 -translate-x-1/2 font-mono text-[10px] tracking-[0.4em] text-phos/50">
 						<span className="scroll-cue">▼ SCROLL</span>
 					</div>
 				</section>
@@ -186,22 +186,22 @@ export default function Home() {
 						<div>
 							<TypedLog
 								lines={["cat /usr/marnel/about.txt"]}
-								className="mb-6 font-mono text-xs text-phos/60"
+								className="deck-block mb-6 font-mono text-xs text-phos/60"
 							/>
-							<p className="reveal max-w-prose font-mono text-sm leading-relaxed text-pale/85">
+							<p data-explode="words" className="reveal max-w-prose font-mono text-sm leading-relaxed text-pale/85">
 								{DATA.summary}
 							</p>
-							<div className="reveal mt-8 flex flex-wrap gap-3">
+							<div data-explode="block" className="reveal mt-8 flex flex-wrap gap-3">
 								<Chip>MS data science — in progress</Chip>
 								<Chip>BS information technology · 2019–2023</Chip>
 								<Chip>{DATA.location}</Chip>
 							</div>
 							{/* capability list — plain mono tags, no meters */}
 							<div className="reveal mt-10">
-								<div className="mb-4 font-mono text-[10px] uppercase tracking-[0.3em] text-phos/50">
+								<div data-explode="chars" className="mb-4 font-mono text-[10px] uppercase tracking-[0.3em] text-phos/50">
 									&gt; ls /skills
 								</div>
-								<ul className="flex max-w-prose flex-wrap gap-x-4 gap-y-2 font-mono text-[11px] text-pale/70">
+								<ul data-explode="words" className="flex max-w-prose flex-wrap gap-x-4 gap-y-2 font-mono text-[11px] text-pale/70">
 									{DATA.skills.map((skill) => (
 										<li key={skill} className="before:mr-1 before:text-phos/50 before:content-['·']">
 											{skill}
@@ -216,7 +216,7 @@ export default function Home() {
 							cols={96}
 							dot={5}
 							opacity={0.85}
-							className="reveal mx-auto h-auto w-full max-w-[300px]"
+							className="deck-block reveal mx-auto h-auto w-full max-w-[300px]"
 							alt="Marnel holding a laptop"
 						/>
 					</div>
@@ -232,14 +232,14 @@ export default function Home() {
 								className="reveal grid gap-2 border-l border-phos/20 pl-6 sm:grid-cols-[190px_1fr] sm:gap-8"
 							>
 								{/* timestamp column, log-file style */}
-								<div className="font-mono text-[11px] uppercase tracking-[0.15em] text-phos/50">
+								<div data-explode="chars" className="font-mono text-[11px] uppercase tracking-[0.15em] text-phos/50">
 									[{job.start} — {job.end}]
 								</div>
 								<div>
-									<h3 className="font-mono text-sm font-bold uppercase tracking-[0.08em] text-pale">
+									<h3 data-explode="chars" className="font-mono text-sm font-bold uppercase tracking-[0.08em] text-pale">
 										{job.title}
 									</h3>
-									<div className="mt-1 font-mono text-xs text-phos/70">
+									<div data-explode="block" className="mt-1 font-mono text-xs text-phos/70">
 										{job.href ? (
 											<Link href={job.href} target="_blank" className="transition-colors hover:text-phos">
 												{job.company}
@@ -249,7 +249,7 @@ export default function Home() {
 										)}
 										<span className="text-phos/40"> · {job.location}</span>
 									</div>
-									<p className="mt-3 max-w-prose font-mono text-xs leading-relaxed text-pale/70">
+									<p data-explode="words" className="mt-3 max-w-prose font-mono text-xs leading-relaxed text-pale/70">
 										{job.description}
 									</p>
 								</div>
@@ -268,16 +268,17 @@ export default function Home() {
 									key={edu.degree}
 									className="reveal grid gap-2 border-l border-phos/20 pl-6 sm:grid-cols-[190px_1fr] sm:gap-8"
 								>
-									<div className="font-mono text-[11px] uppercase tracking-[0.15em] text-phos/50">
+									<div data-explode="chars" className="font-mono text-[11px] uppercase tracking-[0.15em] text-phos/50">
 										[{edu.start} — {edu.end}]
 									</div>
 									<div>
-										<h3 className="font-mono text-sm font-bold uppercase tracking-[0.08em] text-pale">
+										<h3 data-explode="chars" className="font-mono text-sm font-bold uppercase tracking-[0.08em] text-pale">
 											{edu.degree}
 										</h3>
 										<Link
 											href={edu.href}
 											target="_blank"
+											data-explode="block"
 											className="mt-1 inline-block font-mono text-xs text-phos/70 transition-colors hover:text-phos"
 										>
 											{edu.school}
@@ -293,7 +294,7 @@ export default function Home() {
 					<SectionTag index="04" title="project archive" />
 
 					{/* 3D drum — drag or use the ‹ › buttons to rotate */}
-					<div className="reveal">
+					<div data-explode="block" className="reveal">
 						<ProjectDrum />
 					</div>
 
@@ -344,29 +345,30 @@ export default function Home() {
 					className="relative overflow-hidden border-t border-phos/15 px-6 py-24"
 				>
 					{/* rotating wireframe icosphere + particles, behind the text */}
-					<FooterWire className="pointer-events-none absolute inset-0 opacity-60" />
+					<FooterWire className="deck-block pointer-events-none absolute inset-0 opacity-60" />
 
 					<div className="relative z-10 mx-auto flex max-w-5xl flex-col items-center gap-8 text-center">
-						<PixelMark size={44} className="reveal text-phos" />
+						<PixelMark size={44} className="deck-block reveal text-phos" />
 
 						<div className="reveal">
-							<div className="font-display text-2xl uppercase tracking-wide text-pale">
+							<div data-explode="chars" className="font-display text-2xl uppercase tracking-wide text-pale">
 								{DATA.name}
 							</div>
-							<div className="mt-2 font-mono text-[11px] uppercase tracking-[0.25em] text-phos/60">
+							<div data-explode="block" className="mt-2 font-mono text-[11px] uppercase tracking-[0.25em] text-phos/60">
 								software engineer · {DATA.location}
 							</div>
 						</div>
 
 						<a
 							href={`mailto:${DATA.contact.email}`}
+							data-explode="block"
 							className="reveal border border-phos/40 px-6 py-3 font-mono text-xs tracking-[0.2em] text-phos transition-colors hover:border-phos"
 						>
 							&gt; SEND_TRANSMISSION — {DATA.contact.email}
 						</a>
 
 						{/* social links in outlined squares */}
-						<div className="reveal flex gap-3">
+						<div data-explode="block" className="reveal flex gap-3">
 							{Object.values(DATA.contact.social)
 								.filter((social) => social.navbar)
 								.map((social) => {
@@ -385,7 +387,7 @@ export default function Home() {
 								})}
 						</div>
 
-						<div className="reveal font-mono text-[10px] tracking-[0.3em] text-phos/40">
+						<div data-explode="block" className="reveal font-mono text-[10px] tracking-[0.3em] text-phos/40">
 							© {new Date().getFullYear()} — SYSTEM ONLINE
 						</div>
 					</div>

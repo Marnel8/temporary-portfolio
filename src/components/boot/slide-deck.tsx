@@ -29,6 +29,49 @@ export function deckEligible(): boolean {
 
 const TRANSITION_LOCK_MS = 1150; // safety unlock a hair after the timeline
 
+/* ── text splitter ───────────────────────────────────────────────────
+   Wraps the text of [data-explode="chars"|"words"] elements in
+   .deck-glyph spans so the timeline can scatter them individually.
+   - Lazy: runs once per slide, the first time it transitions.
+   - A11y: the marked element keeps an aria-label with the original
+     text; the generated spans are hidden from the tree. */
+
+function splitElement(el: HTMLElement, mode: "chars" | "words") {
+	if (el.dataset.split) return;
+	el.dataset.split = "1";
+	el.setAttribute("aria-label", el.textContent ?? "");
+	const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+	const textNodes: Text[] = [];
+	while (walker.nextNode()) textNodes.push(walker.currentNode as Text);
+	for (const node of textNodes) {
+		const text = node.textContent ?? "";
+		if (!text.trim()) continue;
+		const frag = document.createDocumentFragment();
+		const pieces = mode === "chars" ? Array.from(text) : text.split(/(\s+)/);
+		for (const piece of pieces) {
+			if (mode === "words" && /^\s+$/.test(piece)) {
+				frag.append(piece); // keep whitespace as plain text
+				continue;
+			}
+			const span = document.createElement("span");
+			span.className = "deck-glyph";
+			span.setAttribute("aria-hidden", "true");
+			span.textContent = piece;
+			frag.append(span);
+		}
+		node.replaceWith(frag);
+	}
+}
+
+function ensureSplit(slide: HTMLElement) {
+	slide
+		.querySelectorAll<HTMLElement>('[data-explode="chars"]')
+		.forEach((el) => splitElement(el, "chars"));
+	slide
+		.querySelectorAll<HTMLElement>('[data-explode="words"]')
+		.forEach((el) => splitElement(el, "words"));
+}
+
 export default function SlideDeck({ children }: { children: React.ReactNode }) {
 	const wrapRef = useRef<HTMLDivElement>(null);
 	const slidesRef = useRef<HTMLElement[]>([]);
@@ -39,7 +82,7 @@ export default function SlideDeck({ children }: { children: React.ReactNode }) {
 	const [active, setActive] = useState(0);
 	const [count, setCount] = useState(0);
 
-	/* ── transition (crossfade for now; scatter lands in the next task) ── */
+	/* ── transition: outgoing glyphs scatter → rain swap → assemble ────── */
 	const goTo = (next: number) => {
 		const slides = slidesRef.current;
 		if (lockedRef.current || next === activeRef.current) return;
@@ -50,20 +93,73 @@ export default function SlideDeck({ children }: { children: React.ReactNode }) {
 		activeRef.current = next;
 		setActive(next);
 
+		ensureSplit(out);
+		ensureSplit(inn);
+		// "block" units scatter/fade whole: canvases, dynamic text, chips.
+		// .deck-block is the marker for components that only take className.
+		const BLOCK_SEL = '[data-explode="block"], .deck-block';
+		const outGlyphs = out.querySelectorAll<HTMLElement>(".deck-glyph");
+		const outBlocks = out.querySelectorAll<HTMLElement>(BLOCK_SEL);
+		const innGlyphs = inn.querySelectorAll<HTMLElement>(".deck-glyph");
+		const innBlocks = inn.querySelectorAll<HTMLElement>(BLOCK_SEL);
+
 		const tl = gsap.timeline({
 			onComplete: () => {
 				lockedRef.current = false;
 			},
 		});
-		tl.to(out, { opacity: 0, duration: 0.35, ease: "power2.in" })
+		// 1 · outgoing text explodes into scattered glyphs
+		tl.set([outGlyphs, innGlyphs], { willChange: "transform" })
+			.to(
+				outGlyphs,
+				{
+					x: () => gsap.utils.random(-520, 520),
+					y: () => gsap.utils.random(-380, 380),
+					rotation: () => gsap.utils.random(-120, 120),
+					opacity: 0,
+					duration: 0.5,
+					ease: "power2.in",
+					stagger: { each: 0.005, from: "random" },
+				},
+				0
+			)
+			.to(outBlocks, { opacity: 0, scale: 0.92, duration: 0.4, ease: "power2.in" }, 0)
+			// 2 · midpoint: rain burst covers the swap
 			.add(() => {
 				triggerRain(true);
 				out.classList.remove("deck-active");
 				inn.classList.add("deck-active");
-				gsap.set(out, { opacity: 1 }); // reset for its next entrance
+				// reset the outgoing slide for its next entrance
+				gsap.set(outGlyphs, { x: 0, y: 0, rotation: 0, opacity: 1 });
+				gsap.set(outBlocks, { opacity: 1, scale: 1 });
 				inn.focus({ preventScroll: true });
-			})
-			.fromTo(inn, { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power2.out" });
+			}, ">-0.05")
+			// 3 · incoming glyphs assemble from scatter
+			.fromTo(
+				innGlyphs,
+				{
+					x: () => gsap.utils.random(-420, 420),
+					y: () => gsap.utils.random(-300, 300),
+					rotation: () => gsap.utils.random(-90, 90),
+					opacity: 0,
+				},
+				{
+					x: 0,
+					y: 0,
+					rotation: 0,
+					opacity: 1,
+					duration: 0.55,
+					ease: "power3.out",
+					stagger: { each: 0.004, from: "random" },
+				}
+			)
+			.fromTo(
+				innBlocks,
+				{ opacity: 0, scale: 0.95 },
+				{ opacity: 1, scale: 1, duration: 0.45, ease: "power2.out" },
+				"<"
+			)
+			.set([outGlyphs, innGlyphs], { willChange: "auto" });
 		// belt-and-braces unlock in case the tab is backgrounded mid-tween
 		setTimeout(() => (lockedRef.current = false), TRANSITION_LOCK_MS);
 	};
