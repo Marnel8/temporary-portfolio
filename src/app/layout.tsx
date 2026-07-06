@@ -1,23 +1,23 @@
 import { DATA } from "@/data/resume";
 import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
-import { Inter, Sora, JetBrains_Mono } from "next/font/google";
+import { Inter, Archivo_Black, JetBrains_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
-import SmoothScroll from "@/components/experience/smooth-scroll";
-import ArcadeRoot from "@/components/arcade/arcade-root";
-import Preloader from "@/components/experience/preloader";
-import Cursor from "@/components/experience/cursor";
-import Hud from "@/components/experience/hud";
-import Background from "@/components/three/background";
+import FxProvider from "@/components/boot/fx-context";
+import HudFrame from "@/components/boot/hud-frame";
+import RainOverlay from "@/components/boot/rain-overlay";
+import SmoothScroll from "@/components/boot/smooth-scroll";
 import "./globals.css";
 
-/* "Signal / Perimeter" type stack:
-   Sora → headings · Inter → body · JetBrains Mono → data/labels/timestamps.
-   Variable names are kept from the previous design so every component
-   (blog, arcade, magicui) picks the new fonts up without edits. */
-const display = Sora({
+/* "Boot Sequence" type stack:
+   Archivo Black → the massive hero display face (solid fills only)
+   JetBrains Mono → nearly everything else: labels, logs, UI, body
+   Inter → long-form prose on the blog, where mono tires the eye
+   Variable names are kept from the previous design so existing
+   components pick the fonts up without edits. */
+const display = Archivo_Black({
 	subsets: ["latin"],
-	weight: ["400", "500", "600", "700", "800"],
+	weight: "400",
 	variable: "--font-display",
 	display: "swap",
 });
@@ -77,19 +77,14 @@ export default function RootLayout({
 			suppressHydrationWarning
 			className={cn("dark", body.variable, mono.variable, display.variable)}
 		>
-			<body
-				className={cn(
-					"grain relative min-h-screen overflow-x-hidden bg-[#0A0E14] font-sans text-[#E4E7EB] antialiased",
-					body.className
-				)}
-			>
-				<Preloader />
-				<Background />
-				<Hud />
-				<Cursor />
-				<ArcadeRoot>
+			<body className="relative min-h-screen overflow-x-hidden bg-boot font-mono text-pale antialiased">
+				{/* FxProvider mirrors the CRT toggle onto <html data-fx>;
+				    HudFrame + RainOverlay are fixed chrome on every route. */}
+				<FxProvider>
+					<HudFrame />
+					<RainOverlay />
 					<SmoothScroll>{children}</SmoothScroll>
-				</ArcadeRoot>
+				</FxProvider>
 				<Analytics />
 			</body>
 		</html>
