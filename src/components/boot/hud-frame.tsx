@@ -93,8 +93,9 @@ export default function HudFrame() {
 				FX·{fx ? "ON" : "OFF"}
 			</button>
 
-			{/* bottom corners: quiet status text */}
-			<div className="absolute bottom-6 left-8 hidden text-[9px] tracking-[0.3em] text-phos/40 sm:block">
+			{/* bottom corners: quiet status text
+			    (left one yields its spot to the slide-deck counter) */}
+			<div className="absolute bottom-6 left-8 hidden text-[9px] tracking-[0.3em] text-phos/40 sm:block [html[data-deck='on']_&]:!hidden">
 				SYS.READY
 			</div>
 			<div className="absolute bottom-6 right-8 hidden text-[9px] tracking-[0.3em] text-phos/40 sm:block">

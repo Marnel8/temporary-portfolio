@@ -13,6 +13,7 @@ import ProjectDrum from "@/components/boot/project-drum";
 import PixelMark from "@/components/boot/pixel-mark";
 import FooterWire from "@/components/boot/footer-wire";
 import { triggerRain } from "@/components/boot/rain-overlay";
+import SlideDeck, { deckEligible } from "@/components/boot/slide-deck";
 
 /* ═══════════════════════════════════════════════════════════════════════
    BOOT SEQUENCE — phosphor-terminal portfolio home page.
@@ -84,37 +85,43 @@ export default function Home() {
 			window.addEventListener("bootdone", intro, { once: true });
 		}
 
-		const ctx = gsap.context(() => {
-			// generic reveal-on-scroll for everything marked .reveal
-			gsap.utils.toArray<HTMLElement>(".reveal").forEach((el) => {
-				gsap.fromTo(
-					el,
-					{ y: 28, opacity: 0 },
-					{
-						y: 0,
-						opacity: 1,
-						duration: 0.7,
-						ease: "power2.out",
-						scrollTrigger: { trigger: el, start: "top 82%" },
-					}
-				);
-			});
+		/* Scroll-driven reveals exist only in scroll mode. In deck mode the
+		   fromTo would render everything invisible with no scroll to ever
+		   reveal it — the deck's own timelines handle entrances there. */
+		let ctx: gsap.Context | undefined;
+		if (!deckEligible()) {
+			ctx = gsap.context(() => {
+				// generic reveal-on-scroll for everything marked .reveal
+				gsap.utils.toArray<HTMLElement>(".reveal").forEach((el) => {
+					gsap.fromTo(
+						el,
+						{ y: 28, opacity: 0 },
+						{
+							y: 0,
+							opacity: 1,
+							duration: 0.7,
+							ease: "power2.out",
+							scrollTrigger: { trigger: el, start: "top 82%" },
+						}
+					);
+				});
 
-			// digital-rain burst as each major section takes the viewport
-			// (rain-overlay rate-limits itself, so fast scrolling can't strobe)
-			gsap.utils.toArray<HTMLElement>("[data-rain]").forEach((el) => {
-				ScrollTrigger.create({
-					trigger: el,
-					start: "top 55%",
-					onEnter: () => triggerRain(),
-					onEnterBack: () => triggerRain(),
+				// digital-rain burst as each major section takes the viewport
+				// (rain-overlay rate-limits itself, so fast scrolling can't strobe)
+				gsap.utils.toArray<HTMLElement>("[data-rain]").forEach((el) => {
+					ScrollTrigger.create({
+						trigger: el,
+						start: "top 55%",
+						onEnter: () => triggerRain(),
+						onEnterBack: () => triggerRain(),
+					});
 				});
 			});
-		});
+		}
 
 		return () => {
 			if (introArmed) window.removeEventListener("bootdone", intro);
-			ctx.revert();
+			ctx?.revert();
 		};
 	}, []);
 
@@ -124,9 +131,11 @@ export default function Home() {
 			<BootGate />
 
 			<main className="relative">
+				<SlideDeck>
 				{/* ── [00] HERO ─────────────────────────────────────────── */}
 				<section
 					id="hero"
+					data-slide
 					data-rain
 					className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-6"
 				>
@@ -171,7 +180,7 @@ export default function Home() {
 				</section>
 
 				{/* ── [01] OPERATOR PROFILE (about) ─────────────────────── */}
-				<section id="about" data-rain className="relative mx-auto max-w-5xl px-6 py-28 sm:py-36">
+				<section id="about" data-slide data-rain className="relative mx-auto max-w-5xl px-6 py-28 sm:py-36">
 					<SectionTag index="01" title="operator profile" />
 					<div className="grid items-center gap-14 md:grid-cols-[1fr_minmax(220px,320px)]">
 						<div>
@@ -213,8 +222,8 @@ export default function Home() {
 					</div>
 				</section>
 
-				{/* ── [02] OPS LOG (experience) + [03] TRAINING (education) ── */}
-				<section id="ops" data-rain className="mx-auto max-w-5xl px-6 py-28">
+				{/* ── [02] OPS LOG (experience) ─────────────────────────── */}
+				<section id="experience" data-slide data-rain className="mx-auto max-w-5xl px-6 py-28">
 					<SectionTag index="02" title="ops log — experience" />
 					<ol className="space-y-12">
 						{DATA.work.map((job) => (
@@ -248,9 +257,12 @@ export default function Home() {
 						))}
 					</ol>
 
-					<div className="mt-24">
-						<SectionTag index="03" title="training — education" />
-						<ol className="space-y-8">
+				</section>
+
+				{/* ── [03] TRAINING (education) ─────────────────────────── */}
+				<section id="education" data-slide data-rain className="mx-auto max-w-5xl px-6 py-28">
+					<SectionTag index="03" title="training — education" />
+					<ol className="space-y-8">
 							{DATA.education.map((edu) => (
 								<li
 									key={edu.degree}
@@ -273,12 +285,11 @@ export default function Home() {
 									</div>
 								</li>
 							))}
-						</ol>
-					</div>
+					</ol>
 				</section>
 
 				{/* ── [04] PROJECT ARCHIVE ──────────────────────────────── */}
-				<section id="projects" data-rain className="mx-auto max-w-6xl px-6 py-28">
+				<section id="projects" data-slide data-rain className="mx-auto max-w-6xl px-6 py-28">
 					<SectionTag index="04" title="project archive" />
 
 					{/* 3D drum — drag or use the ‹ › buttons to rotate */}
@@ -286,8 +297,9 @@ export default function Home() {
 						<ProjectDrum />
 					</div>
 
-					{/* plain HTML index — SEO + fallback when WebGL is unavailable */}
-					<ol className="mt-16 divide-y divide-phos/10 border-y border-phos/10">
+					{/* plain HTML index — SEO + fallback when WebGL is unavailable
+					    (hidden in deck mode; the drum shows every project there) */}
+					<ol data-deck-hide className="mt-16 divide-y divide-phos/10 border-y border-phos/10">
 						{DATA.projects.map((project, i) => (
 							<li
 								key={project.title}
@@ -327,6 +339,7 @@ export default function Home() {
 				{/* ── [05] CONTACT / FOOTER ─────────────────────────────── */}
 				<footer
 					id="contact"
+					data-slide
 					data-rain
 					className="relative overflow-hidden border-t border-phos/15 px-6 py-24"
 				>
@@ -379,6 +392,7 @@ export default function Home() {
 				</footer>
 
 				{/* SECTIONS-END */}
+				</SlideDeck>
 			</main>
 		</>
 	);
