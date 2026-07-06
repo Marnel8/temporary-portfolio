@@ -10,6 +10,8 @@ import DitherPortrait from "@/components/boot/dither-portrait";
 import ScrambleCycle from "@/components/boot/scramble-cycle";
 import TypedLog from "@/components/boot/typed-log";
 import ProjectDrum from "@/components/boot/project-drum";
+import PixelMark from "@/components/boot/pixel-mark";
+import FooterWire from "@/components/boot/footer-wire";
 import { triggerRain } from "@/components/boot/rain-overlay";
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -321,6 +323,60 @@ export default function Home() {
 						))}
 					</ol>
 				</section>
+
+				{/* ── [05] CONTACT / FOOTER ─────────────────────────────── */}
+				<footer
+					id="contact"
+					data-rain
+					className="relative overflow-hidden border-t border-phos/15 px-6 py-24"
+				>
+					{/* rotating wireframe icosphere + particles, behind the text */}
+					<FooterWire className="pointer-events-none absolute inset-0 opacity-60" />
+
+					<div className="relative z-10 mx-auto flex max-w-5xl flex-col items-center gap-8 text-center">
+						<PixelMark size={44} className="reveal text-phos" />
+
+						<div className="reveal">
+							<div className="font-display text-2xl uppercase tracking-wide text-pale">
+								{DATA.name}
+							</div>
+							<div className="mt-2 font-mono text-[11px] uppercase tracking-[0.25em] text-phos/60">
+								software engineer · {DATA.location}
+							</div>
+						</div>
+
+						<a
+							href={`mailto:${DATA.contact.email}`}
+							className="reveal border border-phos/40 px-6 py-3 font-mono text-xs tracking-[0.2em] text-phos transition-colors hover:border-phos"
+						>
+							&gt; SEND_TRANSMISSION — {DATA.contact.email}
+						</a>
+
+						{/* social links in outlined squares */}
+						<div className="reveal flex gap-3">
+							{Object.values(DATA.contact.social)
+								.filter((social) => social.navbar)
+								.map((social) => {
+									const Icon = social.icon;
+									return (
+										<Link
+											key={social.name}
+											href={social.url}
+											target="_blank"
+											aria-label={social.name}
+											className="flex h-10 w-10 items-center justify-center border border-phos/30 text-phos/70 transition-colors hover:border-phos hover:text-phos"
+										>
+											<Icon className="size-4" />
+										</Link>
+									);
+								})}
+						</div>
+
+						<div className="reveal font-mono text-[10px] tracking-[0.3em] text-phos/40">
+							© {new Date().getFullYear()} — SYSTEM ONLINE
+						</div>
+					</div>
+				</footer>
 
 				{/* SECTIONS-END */}
 			</main>
