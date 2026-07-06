@@ -34,12 +34,12 @@ export function ArcadeHud({
 			<div className="flex-1">
 				<div className="font-mono text-[10px] uppercase tracking-[0.3em] text-white/60">{playerName}</div>
 				<div className="mt-1 h-3 w-full -skew-x-12 overflow-hidden border border-white/20 bg-black/40">
-					<div ref={pBar} className="h-full bg-[hsl(222,96%,64%)]" style={{ width: "100%" }} />
+					<div ref={pBar} className="h-full bg-[#00E5C7]" style={{ width: "100%" }} />
 				</div>
 			</div>
 			<div
 				ref={clock}
-				className="font-display text-3xl font-bold tabular-nums text-[#f5f3ef]"
+				className="font-display text-3xl font-bold tabular-nums text-[#E4E7EB]"
 			>
 				60
 			</div>

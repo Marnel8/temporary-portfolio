@@ -6,9 +6,10 @@ import { scrollState } from "@/lib/scroll-store";
 const NAV = [
 	{ id: "hero", label: "Start" },
 	{ id: "about", label: "Profile" },
+	{ id: "skills", label: "Matrix" },
+	{ id: "projects", label: "Deploys" },
 	{ id: "experience", label: "Log" },
-	{ id: "projects", label: "Builds" },
-	{ id: "contact", label: "Signal" },
+	{ id: "contact", label: "Channel" },
 ];
 
 export default function Hud() {
@@ -40,7 +41,7 @@ export default function Hud() {
 
 			{/* wordmark */}
 			<div className="fixed left-6 top-6 z-50 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.3em] text-white/60">
-				<span className="inline-block size-1.5 animate-pulse rounded-full bg-[hsl(222,96%,64%)]" />
+				<span className="inline-block size-1.5 animate-pulse rounded-full bg-[#00E5C7]" />
 				MV / Valentin
 			</div>
 
@@ -62,7 +63,7 @@ export default function Hud() {
 							{n.label}
 						</span>
 						<span className="tabular-nums">{String(i + 1).padStart(2, "0")}</span>
-						<span className="h-px w-6 bg-white/20 transition-all group-hover:w-10 group-hover:bg-[hsl(222,96%,64%)]" />
+						<span className="h-px w-6 bg-white/20 transition-all group-hover:w-10 group-hover:bg-[#00E5C7]" />
 					</button>
 				))}
 			</nav>

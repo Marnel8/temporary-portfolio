@@ -80,7 +80,7 @@ export default function ProjectIndex() {
 							// eslint-disable-next-line @next/next/no-img-element
 							<img src={p.image} alt={p.title} className="h-full w-full object-cover" />
 						) : (
-							<div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[hsl(222,96%,30%)] to-[#070809] font-display text-6xl text-white/30">
+							<div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#0f3d36] to-[#0A0E14] font-display text-6xl text-white/30">
 								{String(i + 1).padStart(2, "0")}
 							</div>
 						)}
@@ -114,7 +114,7 @@ export default function ProjectIndex() {
 								{String(i + 1).padStart(2, "0")}
 							</span>
 
-							<h3 className="flex-1 font-display text-3xl font-semibold tracking-[-0.02em] text-white/70 transition-all duration-500 group-hover:translate-x-3 group-hover:text-[#f5f3ef] sm:text-5xl lg:text-6xl">
+							<h3 className="flex-1 font-display text-3xl font-semibold tracking-[-0.02em] text-white/70 transition-all duration-500 group-hover:translate-x-3 group-hover:text-[#E4E7EB] sm:text-5xl lg:text-6xl">
 								{p.title}
 							</h3>
 
@@ -128,7 +128,7 @@ export default function ProjectIndex() {
 								{p.dates.split(" - ")[0].split(" ").slice(-1)}
 							</span>
 
-							<span className="shrink-0 text-xl text-white/40 transition-all duration-500 group-hover:translate-x-1 group-hover:text-[hsl(222,96%,64%)]">
+							<span className="shrink-0 text-xl text-white/40 transition-all duration-500 group-hover:translate-x-1 group-hover:text-[#00E5C7]">
 								↗
 							</span>
 						</div>

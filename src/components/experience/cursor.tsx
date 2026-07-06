@@ -51,7 +51,7 @@ export default function Cursor() {
 		<div className="pointer-events-none fixed inset-0 z-[90] hidden md:block">
 			<div
 				ref={ring}
-				className="absolute -left-5 -top-5 size-10 rounded-full border border-[hsl(222,96%,64%)] opacity-50 mix-blend-difference"
+				className="absolute -left-5 -top-5 size-10 rounded-full border border-[#00E5C7] opacity-50 mix-blend-difference"
 			/>
 			<div
 				ref={dot}

@@ -36,34 +36,39 @@
     --radius: 0.25rem;
   }
 
+  /* ── "Signal / Perimeter" dark theme ─────────────────────────────
+     bg #0A0E14 · panel #12161F · border #1E2530
+     accent #00E5C7 (teal — does all the work)
+     secondary accent #7C6FFF (violet — sparing)
+     text #E4E7EB · muted #8B93A1                                    */
   .dark {
-    --background: 220 14% 6%;        /* near-black */
-    --foreground: 40 12% 94%;
+    --background: 216 33% 6%;        /* #0A0E14 */
+    --foreground: 214 15% 91%;       /* #E4E7EB */
 
-    --card: 220 14% 7%;
-    --card-foreground: 40 12% 94%;
+    --card: 220 27% 10%;             /* #12161F panel */
+    --card-foreground: 214 15% 91%;
 
-    --popover: 220 14% 7%;
-    --popover-foreground: 40 12% 94%;
+    --popover: 220 27% 10%;
+    --popover-foreground: 214 15% 91%;
 
-    --primary: 40 12% 94%;
-    --primary-foreground: 220 14% 6%;
+    --primary: 214 15% 91%;
+    --primary-foreground: 216 33% 6%;
 
-    --secondary: 220 10% 12%;
-    --secondary-foreground: 40 12% 94%;
+    --secondary: 217 23% 15%;
+    --secondary-foreground: 214 15% 91%;
 
-    --muted: 220 10% 12%;
-    --muted-foreground: 220 6% 60%;
+    --muted: 217 23% 15%;
+    --muted-foreground: 218 10% 59%; /* #8B93A1 */
 
-    --accent: 222 96% 64%;           /* lifted cobalt for dark */
-    --accent-foreground: 220 14% 6%;
+    --accent: 172 100% 45%;          /* #00E5C7 signal teal */
+    --accent-foreground: 216 33% 6%;
 
     --destructive: 0 62% 40%;
-    --destructive-foreground: 40 12% 94%;
+    --destructive-foreground: 214 15% 91%;
 
-    --border: 220 10% 16%;
-    --input: 220 10% 16%;
-    --ring: 222 96% 64%;
+    --border: 217 23% 15%;           /* #1E2530 hairline */
+    --input: 217 23% 15%;
+    --ring: 172 100% 45%;
   }
 }
 
@@ -106,16 +111,52 @@
     font-family: var(--font-display), var(--font-sans), system-ui, sans-serif;
   }
 
-  /* infinite skills marquee */
-  @keyframes marquee {
-    from { transform: translateX(0); }
-    to { transform: translateX(-50%); }
+  /* ── Signal/Perimeter utilities ──────────────────────────────── */
+
+  /* faint blueprint grid used behind panels & the hero */
+  .signal-grid {
+    background-image:
+      linear-gradient(rgba(228, 231, 235, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(228, 231, 235, 0.03) 1px, transparent 1px);
+    background-size: 48px 48px;
   }
-  .marquee {
-    animation: marquee 32s linear infinite;
+
+  /* CRT-style scanlines — layered over project tiles on hover */
+  .scanlines::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+      to bottom,
+      rgba(0, 229, 199, 0.06) 0px,
+      rgba(0, 229, 199, 0.06) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+    opacity: 0;
+    transition: opacity 0.35s ease;
   }
-  .marquee:hover {
-    animation-play-state: paused;
+  .group:hover > .scanlines::after,
+  .scanlines:hover::after {
+    opacity: 1;
+  }
+
+  /* quick horizontal-slice glitch, fired on tile hover */
+  @keyframes glitch-slice {
+    0%   { clip-path: inset(0 0 0 0); transform: translateX(0); }
+    12%  { clip-path: inset(18% 0 62% 0); transform: translateX(-4px); }
+    24%  { clip-path: inset(65% 0 12% 0); transform: translateX(4px); }
+    36%  { clip-path: inset(40% 0 42% 0); transform: translateX(-2px); }
+    48%, 100% { clip-path: inset(0 0 0 0); transform: translateX(0); }
+  }
+  .group:hover .glitch-once {
+    animation: glitch-slice 0.5s steps(2, end) 1;
+  }
+
+  /* soft teal glow for key numbers / live dots */
+  .signal-glow {
+    text-shadow: 0 0 18px rgba(0, 229, 199, 0.45);
   }
 
   /* very subtle paper grain — SVG noise, 3% */

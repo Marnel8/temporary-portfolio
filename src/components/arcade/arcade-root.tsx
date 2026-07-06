@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useLayoutEffect, useReducer, useState } from "react";
+import { usePathname } from "next/navigation";
 import {
 	arcadeReducer,
 	initialArcadeState,
@@ -15,11 +16,27 @@ import StageRound from "./stage-round";
 import StageResults from "./stage-results";
 
 export default function ArcadeRoot({ children }: { children: React.ReactNode }) {
-	const [state, dispatch] = useReducer(arcadeReducer, undefined, () => {
-		if (typeof window === "undefined") return initialArcadeState("boot");
-		const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-		return initialArcadeState(reduced ? "classic" : "boot");
-	});
+	// The arcade intro only gates the home page — deep links (blog posts,
+	// etc.) go straight to the content. pathname is identical on the server
+	// and client, so this doesn't introduce a hydration mismatch.
+	const pathname = usePathname();
+	const isHome = pathname === "/";
+
+	// The initializer must be deterministic between server and client or React
+	// reports a hydration mismatch — so it only looks at the pathname. The
+	// reduced-motion downgrade happens in the layout effect below instead.
+	const [state, dispatch] = useReducer(arcadeReducer, undefined, () =>
+		initialArcadeState(isHome ? "boot" : "classic")
+	);
+
+	// prefers-reduced-motion users skip the arcade intro; useLayoutEffect so
+	// the boot screen never paints for them
+	useLayoutEffect(() => {
+		if (isHome && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+			dispatch({ type: "EXIT_TO_CLASSIC" });
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
 	const [cinematic, setCinematic] = useState(false);
 
@@ -63,13 +80,18 @@ export default function ArcadeRoot({ children }: { children: React.ReactNode }) 
 		return (
 			<>
 				{children}
-				<button
-					type="button"
-					onClick={() => dispatch({ type: "ENTER_ARCADE" })}
-					className="fixed bottom-5 right-5 z-50 border border-white/20 bg-black/50 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.3em] text-white/60 backdrop-blur transition hover:border-white/50 hover:text-white"
-				>
-					▸ Enter Arcade
-				</button>
+				{/* arcade entry only offered on the home page — parked top-right
+				    under the HUD scroll readout so it never collides with the
+				    hero status bar or section CTAs */}
+				{isHome && (
+					<button
+						type="button"
+						onClick={() => dispatch({ type: "ENTER_ARCADE" })}
+						className="fixed right-6 top-14 z-50 border border-white/20 bg-black/50 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.3em] text-white/60 backdrop-blur transition hover:border-[#00E5C7]/50 hover:text-[#00E5C7]"
+					>
+						▸ Enter Arcade
+					</button>
+				)}
 			</>
 		);
 	}

@@ -21,12 +21,12 @@ export default function StageResults({
 	const won = result.winner === "player";
 
 	return (
-		<div className="fixed inset-0 z-40 flex flex-col justify-center bg-[#070809] p-6 sm:p-12">
+		<div className="fixed inset-0 z-40 flex flex-col justify-center bg-[#0A0E14] p-6 sm:p-12">
 			<div className="mx-auto w-full max-w-3xl">
-				<div className="font-display text-7xl font-black italic text-[#f5f3ef] drop-shadow-[0_0_24px_rgba(47,107,255,0.6)] sm:text-8xl">
+				<div className="font-display text-7xl font-black italic text-[#E4E7EB] drop-shadow-[0_0_24px_rgba(0,229,199,0.6)] sm:text-8xl">
 					{won ? "YOU WIN" : "K.O."}
 				</div>
-				<div className="mt-2 font-mono text-[11px] uppercase tracking-[0.35em] text-[hsl(222,96%,64%)]">
+				<div className="mt-2 font-mono text-[11px] uppercase tracking-[0.35em] text-[#00E5C7]">
 					{result.timedOut ? "Time Over" : "Finish"} · {f.name}
 				</div>
 
@@ -42,7 +42,7 @@ export default function StageResults({
 
 				<div className="mt-10 flex flex-wrap gap-4">
 					{f.demoUrl && (
-						<Link href={f.demoUrl} target="_blank" className="-skew-x-6 bg-[hsl(222,96%,64%)] px-6 py-3 font-mono text-xs font-bold uppercase tracking-[0.3em] text-[#070809] hover:brightness-110">
+						<Link href={f.demoUrl} target="_blank" className="-skew-x-6 bg-[#00E5C7] px-6 py-3 font-mono text-xs font-bold uppercase tracking-[0.3em] text-[#0A0E14] hover:brightness-110">
 							Live Demo →
 						</Link>
 					)}
@@ -54,10 +54,10 @@ export default function StageResults({
 				</div>
 
 				<div className="mt-12 flex flex-wrap gap-6 border-t border-white/10 pt-6">
-					<button type="button" onClick={onNext} className="font-mono text-xs uppercase tracking-[0.3em] text-white/70 hover:text-[hsl(222,96%,64%)]">
+					<button type="button" onClick={onNext} className="font-mono text-xs uppercase tracking-[0.3em] text-white/70 hover:text-[#00E5C7]">
 						↻ Next Fighter
 					</button>
-					<button type="button" onClick={onContact} className="font-mono text-xs uppercase tracking-[0.3em] text-white/70 hover:text-[hsl(222,96%,64%)]">
+					<button type="button" onClick={onContact} className="font-mono text-xs uppercase tracking-[0.3em] text-white/70 hover:text-[#00E5C7]">
 						Enter the Dojo → Contact
 					</button>
 				</div>

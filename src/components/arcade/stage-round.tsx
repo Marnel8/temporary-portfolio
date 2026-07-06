@@ -87,11 +87,11 @@ export default function StageRound({
 	);
 
 	return (
-		<div className="fixed inset-0 z-40 bg-[#070809]">
+		<div className="fixed inset-0 z-40 bg-[#0A0E14]">
 			<ArcadeHud playerName="MARNEL" oppName={opp.name} getState={getHud} />
 			{announce && (
 				<div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center">
-					<span className="font-display text-7xl font-bold tracking-tight text-[#f5f3ef] drop-shadow-[0_0_20px_rgba(47,107,255,0.6)]">
+					<span className="font-display text-7xl font-bold tracking-tight text-[#E4E7EB] drop-shadow-[0_0_20px_rgba(0,229,199,0.6)]">
 						{announce}
 					</span>
 				</div>
@@ -101,8 +101,8 @@ export default function StageRound({
 				gl={{ antialias: true, powerPreference: "high-performance" }}
 				camera={{ position: [0, 1, 6], fov: 45 }}
 			>
-				<color attach="background" args={["#070809"]} />
-				<fog attach="fog" args={["#070809", 7, 18]} />
+				<color attach="background" args={["#0A0E14"]} />
+				<fog attach="fog" args={["#0A0E14", 7, 18]} />
 				<ambientLight intensity={0.5} />
 				<pointLight position={[4, 5, 5]} intensity={120} color={ACCENT} />
 				<pointLight position={[-5, 3, 4]} intensity={90} color={HOT} />

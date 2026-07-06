@@ -97,7 +97,7 @@ export default function ProjectStack() {
 											className="h-full w-full object-cover"
 										/>
 									) : (
-										<div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[hsl(222,96%,28%)] to-[#070809] font-display text-[10rem] text-white/15">
+										<div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#0f3d36] to-[#0A0E14] font-display text-[10rem] text-white/15">
 											{String(i + 1).padStart(2, "0")}
 										</div>
 									)}
@@ -146,10 +146,10 @@ export default function ProjectStack() {
 											href={href}
 											target="_blank"
 											data-hover
-											className="group mt-8 inline-flex items-center gap-3 font-display text-lg font-semibold text-[hsl(222,96%,64%)]"
+											className="group mt-8 inline-flex items-center gap-3 font-display text-lg font-semibold text-[#00E5C7]"
 										>
 											View build
-											<span className="flex size-9 items-center justify-center rounded-full border border-[hsl(222,96%,64%)] transition-transform duration-300 group-hover:rotate-45">
+											<span className="flex size-9 items-center justify-center rounded-full border border-[#00E5C7] transition-transform duration-300 group-hover:rotate-45">
 												↗
 											</span>
 										</Link>

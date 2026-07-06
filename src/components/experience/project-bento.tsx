@@ -49,7 +49,7 @@ export default function ProjectBento() {
 				const Tile = (
 					<div
 						data-hover
-						className={`bento-tile group relative h-full overflow-hidden rounded-xl border border-white/12 bg-[#0c0d0f] ${span}`}
+						className={`bento-tile group relative h-full overflow-hidden border border-[#1E2530] bg-[#12161F] transition-colors duration-300 hover:border-[#00E5C7]/40 ${span}`}
 					>
 						{/* media */}
 						<div className="absolute inset-0">
@@ -70,22 +70,25 @@ export default function ProjectBento() {
 									className="h-full w-full object-cover opacity-45 grayscale transition-all duration-700 group-hover:scale-105 group-hover:opacity-80 group-hover:grayscale-0"
 								/>
 							) : (
-								<div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[hsl(222,96%,24%)] to-[#070809] font-display text-[6rem] text-white/15">
+								<div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#0f3d36] to-[#0A0E14] font-display text-[6rem] text-white/15">
 									{String(i + 1).padStart(2, "0")}
 								</div>
 							)}
 						</div>
 
 						{/* gradient scrim */}
-						<div className="absolute inset-0 bg-gradient-to-t from-[#070809] via-[#070809]/40 to-transparent" />
+						<div className="absolute inset-0 bg-gradient-to-t from-[#0A0E14] via-[#0A0E14]/40 to-transparent" />
 
-						{/* HUD index */}
-						<span className="absolute right-4 top-4 font-mono text-[10px] tracking-[0.3em] text-white/50">
+						{/* CRT scanlines sweep in on hover (see globals.css) */}
+						<div className="scanlines absolute inset-0" />
+
+						{/* HUD index — mono, teal on hover */}
+						<span className="absolute right-4 top-4 font-mono text-[10px] tracking-[0.3em] text-[#8B93A1] transition-colors group-hover:text-[#00E5C7]">
 							{String(i + 1).padStart(2, "0")}
 						</span>
 						{p.active && (
-							<span className="absolute left-4 top-4 flex items-center gap-1.5 font-mono text-[9px] uppercase tracking-[0.25em] text-emerald-300">
-								<span className="size-1.5 animate-pulse rounded-full bg-emerald-400" />
+							<span className="absolute left-4 top-4 flex items-center gap-1.5 font-mono text-[9px] uppercase tracking-[0.25em] text-[#00E5C7]">
+								<span className="size-1.5 animate-pulse rounded-full bg-[#00E5C7]" />
 								Live
 							</span>
 						)}
@@ -93,23 +96,24 @@ export default function ProjectBento() {
 						{/* content */}
 						<div className="absolute inset-x-0 bottom-0 p-5">
 							<div className="translate-y-0 transition-transform duration-500 group-hover:-translate-y-1">
-								<h3 className="font-display text-xl font-semibold leading-tight tracking-tight sm:text-2xl">
+								{/* glitch-once fires a quick slice animation on hover */}
+								<h3 className="glitch-once font-display text-xl font-semibold leading-tight tracking-tight sm:text-2xl">
 									{p.title}
 								</h3>
-								<div className="mt-1 flex flex-wrap gap-x-3 font-mono text-[9px] uppercase tracking-[0.15em] text-white/45">
+								<div className="mt-1 flex flex-wrap gap-x-3 font-mono text-[9px] uppercase tracking-[0.15em] text-[#8B93A1]">
 									{p.technologies.slice(0, 4).map((t) => (
 										<span key={t}>{t}</span>
 									))}
 								</div>
 							</div>
 							{/* description revealed on hover */}
-							<p className="mt-2 max-h-0 overflow-hidden text-xs leading-relaxed text-white/60 opacity-0 transition-all duration-500 group-hover:max-h-24 group-hover:opacity-100">
+							<p className="mt-2 max-h-0 overflow-hidden text-xs leading-relaxed text-[#E4E7EB]/70 opacity-0 transition-all duration-500 group-hover:max-h-24 group-hover:opacity-100">
 								{p.description}
 							</p>
 						</div>
 
 						{/* hover arrow */}
-						<span className="absolute right-4 bottom-4 flex size-8 translate-y-2 items-center justify-center rounded-full border border-white/20 bg-black/30 text-white/70 opacity-0 backdrop-blur transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
+						<span className="absolute right-4 bottom-4 flex size-8 translate-y-2 items-center justify-center border border-[#00E5C7]/40 bg-[#0A0E14]/60 text-[#00E5C7] opacity-0 backdrop-blur transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
 							↗
 						</span>
 					</div>
