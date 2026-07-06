@@ -9,6 +9,7 @@ import BootGate from "@/components/boot/boot-gate";
 import DitherPortrait from "@/components/boot/dither-portrait";
 import ScrambleCycle from "@/components/boot/scramble-cycle";
 import TypedLog from "@/components/boot/typed-log";
+import ProjectDrum from "@/components/boot/project-drum";
 import { triggerRain } from "@/components/boot/rain-overlay";
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -272,6 +273,53 @@ export default function Home() {
 							))}
 						</ol>
 					</div>
+				</section>
+
+				{/* ── [04] PROJECT ARCHIVE ──────────────────────────────── */}
+				<section id="projects" data-rain className="mx-auto max-w-6xl px-6 py-28">
+					<SectionTag index="04" title="project archive" />
+
+					{/* 3D drum — drag or use the ‹ › buttons to rotate */}
+					<div className="reveal">
+						<ProjectDrum />
+					</div>
+
+					{/* plain HTML index — SEO + fallback when WebGL is unavailable */}
+					<ol className="mt-16 divide-y divide-phos/10 border-y border-phos/10">
+						{DATA.projects.map((project, i) => (
+							<li
+								key={project.title}
+								className="reveal grid gap-3 py-6 sm:grid-cols-[56px_1fr_auto] sm:gap-6"
+							>
+								<span className="font-mono text-xs text-phos/50">
+									{String(i + 1).padStart(2, "0")}
+								</span>
+								<div>
+									<h3 className="font-mono text-sm font-bold uppercase tracking-[0.06em] text-pale">
+										{project.title}
+									</h3>
+									<p className="mt-1 max-w-prose font-mono text-xs leading-relaxed text-pale/70">
+										{project.description}
+									</p>
+									<p className="mt-2 font-mono text-[10px] uppercase tracking-[0.12em] text-phos/60">
+										{project.technologies.join(" · ")}
+									</p>
+								</div>
+								<div className="flex items-start gap-3 font-mono text-xs">
+									{project.links.map((link) => (
+										<Link
+											key={link.type}
+											href={link.href || "#"}
+											target="_blank"
+											className="text-phos/70 underline-offset-4 transition-colors hover:text-phos hover:underline"
+										>
+											[{link.type.toLowerCase()}]
+										</Link>
+									))}
+								</div>
+							</li>
+						))}
+					</ol>
 				</section>
 
 				{/* SECTIONS-END */}
