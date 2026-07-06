@@ -23,6 +23,13 @@ const config = {
         sans: ["var(--font-sans)", ...fontFamily.sans],
       },
       colors: {
+        /* ── Boot Sequence phosphor palette ───────────────────────
+           phos — the single glowing accent (all UI derives from it)
+           pale — "lit phosphor" body text, readable at length
+           boot — near-black with a faint green cast               */
+        phos: "#00FF6A",
+        pale: "#C8FFDD",
+        boot: "#010603",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

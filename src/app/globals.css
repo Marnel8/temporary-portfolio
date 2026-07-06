@@ -36,39 +36,38 @@
     --radius: 0.25rem;
   }
 
-  /* ── "Signal / Perimeter" dark theme ─────────────────────────────
-     bg #0A0E14 · panel #12161F · border #1E2530
-     accent #00E5C7 (teal — does all the work)
-     secondary accent #7C6FFF (violet — sparing)
-     text #E4E7EB · muted #8B93A1                                    */
+  /* ── "Boot Sequence" dark theme ──────────────────────────────────
+     bg #010603 · text #C8FFDD · accent #00FF6A (phosphor green)
+     One hue only; everything else is that hue at lower saturation.
+     These vars restyle the blog + shadcn/ui pieces for free.        */
   .dark {
-    --background: 216 33% 6%;        /* #0A0E14 */
-    --foreground: 214 15% 91%;       /* #E4E7EB */
+    --background: 144 71% 1%;        /* #010603 boot black */
+    --foreground: 143 100% 89%;      /* #C8FFDD pale phosphor */
 
-    --card: 220 27% 10%;             /* #12161F panel */
-    --card-foreground: 214 15% 91%;
+    --card: 144 45% 3%;
+    --card-foreground: 143 100% 89%;
 
-    --popover: 220 27% 10%;
-    --popover-foreground: 214 15% 91%;
+    --popover: 144 45% 3%;
+    --popover-foreground: 143 100% 89%;
 
-    --primary: 214 15% 91%;
-    --primary-foreground: 216 33% 6%;
+    --primary: 145 100% 50%;         /* #00FF6A */
+    --primary-foreground: 144 71% 1%;
 
-    --secondary: 217 23% 15%;
-    --secondary-foreground: 214 15% 91%;
+    --secondary: 145 35% 8%;
+    --secondary-foreground: 143 100% 89%;
 
-    --muted: 217 23% 15%;
-    --muted-foreground: 218 10% 59%; /* #8B93A1 */
+    --muted: 145 35% 8%;
+    --muted-foreground: 145 15% 55%; /* dim green-gray */
 
-    --accent: 172 100% 45%;          /* #00E5C7 signal teal */
-    --accent-foreground: 216 33% 6%;
+    --accent: 145 100% 50%;
+    --accent-foreground: 144 71% 1%;
 
     --destructive: 0 62% 40%;
-    --destructive-foreground: 214 15% 91%;
+    --destructive-foreground: 143 100% 89%;
 
-    --border: 217 23% 15%;           /* #1E2530 hairline */
-    --input: 217 23% 15%;
-    --ring: 172 100% 45%;
+    --border: 145 55% 11%;           /* hairline */
+    --input: 145 55% 11%;
+    --ring: 145 100% 50%;
   }
 }
 
@@ -222,6 +221,67 @@
   /* numbered section eyebrow */
   .eyebrow {
     @apply font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground;
+  }
+
+  /* ── Boot Sequence utilities ─────────────────────────────────── */
+
+  /* soft phosphor bloom on key text */
+  .phos-glow {
+    text-shadow: 0 0 8px rgba(0, 255, 106, 0.55), 0 0 26px rgba(0, 255, 106, 0.22);
+  }
+
+  /* blinking block cursor used by typed-log / boot-gate */
+  .term-caret {
+    display: inline-block;
+    width: 0.55em;
+    height: 1em;
+    margin-left: 0.15em;
+    background: #00ff6a;
+    vertical-align: -0.15em;
+    animation: caret-blink 1.05s steps(1) infinite;
+  }
+
+  /* CRT overlays — rendered by hud-frame, switched by the FX toggle
+     via html[data-fx] so no React re-render is needed */
+  .crt-scanlines {
+    position: absolute;
+    inset: 0;
+    display: none;
+    background: repeating-linear-gradient(
+      to bottom,
+      rgba(0, 255, 106, 0.045) 0px,
+      rgba(0, 255, 106, 0.045) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+  }
+  .crt-vignette {
+    position: absolute;
+    inset: 0;
+    display: none;
+    background: radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.55) 100%);
+  }
+  html[data-fx="on"] .crt-scanlines {
+    display: block;
+    animation: crt-flicker 6s steps(1) infinite;
+  }
+  html[data-fx="on"] .crt-vignette {
+    display: block;
+  }
+  /* occasional two-frame brightness dip — subtle, not strobing */
+  @keyframes crt-flicker {
+    0%, 93%, 95.5%, 100% { opacity: 1; }
+    94%, 95% { opacity: 0.75; }
+  }
+
+  /* hero scroll cue */
+  @keyframes cue-float {
+    0%, 100% { transform: translateY(0); opacity: 0.55; }
+    50% { transform: translateY(6px); opacity: 1; }
+  }
+  .scroll-cue {
+    display: inline-block;
+    animation: cue-float 2.4s ease-in-out infinite;
   }
 }
 
