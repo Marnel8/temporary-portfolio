@@ -132,26 +132,37 @@ export default function SlideDeck({ children }: { children: React.ReactNode }) {
 			);
 		if (outBlocks.length)
 			tl.to(outBlocks, { opacity: 0, scale: 0.92, duration: 0.4, ease: "power2.in" }, 0);
-		// 2 · midpoint: rain burst covers the swap
+		// 2 · midpoint: rain burst covers the swap.
+		// Transform writes must only hit VISIBLE elements: GSAP measures a
+		// display:none element by reparenting it to <html> and restores it
+		// via nextElementSibling (gsap _getMatrix), which hops whitespace
+		// text nodes and joins words ("and smarter" → "andsmarter"). So:
+		// reset the outgoing slide BEFORE hiding it, scatter the incoming
+		// glyphs AFTER showing it, and assemble with to() tweens (lazy
+		// init) instead of fromTo() (immediateRender while still hidden).
 		tl.add(() => {
 			triggerRain(true);
-			out.classList.remove("deck-active");
-			inn.classList.add("deck-active");
 			// reset the outgoing slide for its next entrance
 			if (outGlyphs.length) gsap.set(outGlyphs, { x: 0, y: 0, rotation: 0, opacity: 1 });
 			if (outBlocks.length) gsap.set(outBlocks, { opacity: 1, scale: 1 });
-			inn.focus({ preventScroll: true });
-		}, 0.45);
-		// 3 · incoming glyphs assemble from scatter
-		if (innGlyphs.length)
-			tl.fromTo(
-				innGlyphs,
-				{
+			out.classList.remove("deck-active");
+			inn.classList.add("deck-active");
+			// scattered start state — same tick as the display flip, so the
+			// assembled slide never paints before it scatters
+			if (innGlyphs.length)
+				gsap.set(innGlyphs, {
 					x: () => gsap.utils.random(-420, 420),
 					y: () => gsap.utils.random(-300, 300),
 					rotation: () => gsap.utils.random(-90, 90),
 					opacity: 0,
-				},
+				});
+			if (innBlocks.length) gsap.set(innBlocks, { opacity: 0, scale: 0.95 });
+			inn.focus({ preventScroll: true });
+		}, 0.45);
+		// 3 · incoming glyphs assemble from scatter
+		if (innGlyphs.length)
+			tl.to(
+				innGlyphs,
 				{
 					x: 0,
 					y: 0,
@@ -164,9 +175,8 @@ export default function SlideDeck({ children }: { children: React.ReactNode }) {
 				0.5
 			);
 		if (innBlocks.length)
-			tl.fromTo(
+			tl.to(
 				innBlocks,
-				{ opacity: 0, scale: 0.95 },
 				{ opacity: 1, scale: 1, duration: 0.45, ease: "power2.out" },
 				0.5
 			);
