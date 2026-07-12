@@ -173,10 +173,9 @@ export default function SlideDeck({ children }: { children: React.ReactNode }) {
 			if (outBlocks.length) gsap.set(outBlocks, { opacity: 1, scale: 1 });
 			out.classList.remove("deck-active");
 			inn.classList.add("deck-active");
-			// portraits: restore the (now hidden) outgoing one intact for its
-			// next entrance; pre-scatter the incoming one before it is shown
-			// so it never flashes assembled
-			outDither.forEach((h) => h.draw(0));
+			// pre-scatter the incoming portrait before it is shown so it never
+			// flashes assembled; the outgoing one rests scattered (hidden) and
+			// is re-established by its next entrance, like the glyph reset above
 			innDither.forEach((h) => {
 				h.reseed();
 				h.draw(1);
