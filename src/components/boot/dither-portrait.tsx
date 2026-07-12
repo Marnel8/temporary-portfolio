@@ -139,8 +139,8 @@ export default function DitherPortrait({
 				}
 			}
 
-			// register for scatter; reseed once so a first transition works
-			// even before the deck calls reseed itself
+			// register for scatter. vx/vy start zero-filled; the deck calls
+			// reseed() before every transition, so first-frame scatter is correct.
 			const state: DotState = {
 				xs: Float32Array.from(xs),
 				ys: Float32Array.from(ys),
