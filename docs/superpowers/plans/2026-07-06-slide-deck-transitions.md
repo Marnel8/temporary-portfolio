@@ -32,13 +32,13 @@
 - Consumes: nothing new.
 - Produces: `triggerRain(force?: boolean)` — `force` bypasses the 3s rate limit; window CustomEvent `"deckmode"` with `detail: { on: boolean }` — SmoothScroll stops/starts Lenis on it; CSS contract: `html[data-deck="on"]` + `[data-slide]` + `.deck-active` + `[data-deck-hide]` + `.deck-glyph`.
 
-- [ ] **Step 1: Create the branch**
+- [x] **Step 1: Create the branch**
 
 ```bash
 git checkout -b feat/slide-deck-transitions
 ```
 
-- [ ] **Step 2: Add `force` to triggerRain**
+- [x] **Step 2: Add `force` to triggerRain**
 
 In `rain-overlay.tsx`, change the listener type and public fn:
 
@@ -64,7 +64,7 @@ and in the component change `const start = () => {` to:
 
 (rest of `start` unchanged).
 
-- [ ] **Step 3: Pause Lenis in deck mode**
+- [x] **Step 3: Pause Lenis in deck mode**
 
 In `smooth-scroll.tsx`, inside the `useEffect` after `lenis.on("scroll", ...)`, add:
 
@@ -82,7 +82,7 @@ In `smooth-scroll.tsx`, inside the `useEffect` after `lenis.on("scroll", ...)`, 
 
 and in the cleanup: `window.removeEventListener("deckmode", onDeckMode);`
 
-- [ ] **Step 4: Deck CSS**
+- [x] **Step 4: Deck CSS**
 
 Append to the Boot Sequence utilities block in `globals.css`:
 
@@ -119,7 +119,7 @@ Append to the Boot Sequence utilities block in `globals.css`:
 	}
 ```
 
-- [ ] **Step 5: Build + commit**
+- [x] **Step 5: Build + commit**
 
 Run: `npm run build` → exit 0. (Nothing user-visible changes yet.)
 
@@ -143,7 +143,7 @@ Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>"
 - Consumes: Task 1's CSS contract, `"deckmode"` event, `triggerRain(force)`.
 - Produces: `SlideDeck` default export, props `{ children: React.ReactNode }`; exports `deckEligible(): boolean` (media-query check — the page uses it to skip ScrollTrigger setup). Dispatches `"deckmode"`. Marks sections via `[data-slide]` children it finds in its own DOM subtree. Transition in this task is a plain crossfade; Task 3 replaces it with scatter/assemble.
 
-- [ ] **Step 1: Create `slide-deck.tsx`**
+- [x] **Step 1: Create `slide-deck.tsx`**
 
 ```tsx
 "use client";
@@ -316,7 +316,7 @@ export default function SlideDeck({ children }: { children: React.ReactNode }) {
 }
 ```
 
-- [ ] **Step 2: Wire the page**
+- [x] **Step 2: Wire the page**
 
 In `page.tsx`:
 
@@ -364,7 +364,7 @@ f. Gate the ScrollTrigger setup. In the `useLayoutEffect`, wrap ONLY the `ctx = 
 
 and in the cleanup: `ctx?.revert();` (the `bootdone` intro stays unconditional — the hero name reveal runs in both modes).
 
-- [ ] **Step 3: Hide SYS.READY under deck mode**
+- [x] **Step 3: Hide SYS.READY under deck mode**
 
 In `hud-frame.tsx`, the bottom-left status div gets an extra class so the deck's counter can take its spot:
 
@@ -374,11 +374,11 @@ In `hud-frame.tsx`, the bottom-left status div gets an extra class so the deck's
 
 (Use the arbitrary-variant syntax exactly as written; it compiles under Tailwind 3.4.)
 
-- [ ] **Step 4: Build + drive the crossfade deck**
+- [x] **Step 4: Build + drive the crossfade deck**
 
 Run: `npm run build` → exit 0. Start dev server; with a 1440×900 Playwright context: dispatch one `wheel` event → `html[data-deck]` is `"on"`, slide `#about` has `.deck-active`, `#hero` doesn't, `window.scrollY === 0`. In a 390×844 context: no `data-deck` attribute, page scrolls, all sections visible.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/components/boot/slide-deck.tsx src/app/page.tsx src/components/boot/hud-frame.tsx
@@ -399,7 +399,7 @@ Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>"
 - Consumes: Task 2's engine; markers `data-explode="chars" | "words" | "block"` on elements inside slides.
 - Produces: final transition behavior. No API changes.
 
-- [ ] **Step 1: Add the splitter to `slide-deck.tsx`** (above the component)
+- [x] **Step 1: Add the splitter to `slide-deck.tsx`** (above the component)
 
 ```tsx
 /* ── text splitter ───────────────────────────────────────────────────
@@ -447,7 +447,7 @@ function ensureSplit(slide: HTMLElement) {
 }
 ```
 
-- [ ] **Step 2: Replace the crossfade timeline in `goTo`**
+- [x] **Step 2: Replace the crossfade timeline in `goTo`**
 
 ```tsx
 		ensureSplit(out);
@@ -518,7 +518,7 @@ function ensureSplit(slide: HTMLElement) {
 
 (The `TRANSITION_LOCK_MS` safety unlock stays.)
 
-- [ ] **Step 3: Add explode markers in `page.tsx`**
+- [x] **Step 3: Add explode markers in `page.tsx`**
 
 - Hero: both name `<span>`s → `data-explode="chars"`; the two corner-label divs, the `TypedLog`, the `DitherPortrait`, and the scroll-cue div → `data-explode="block"` (dynamic/canvas content scatters as whole units).
 - Every `SectionTag` call site: wrap is a div with `.reveal` — add `data-explode="block"` via a new optional prop instead: change `SectionTag` root div to accept it:
@@ -534,11 +534,11 @@ function SectionTag({ index, title }: { index: string; title: string }) {
 - Projects: the drum wrapper `div.reveal` → `data-explode="block"`.
 - Contact: `PixelMark`, name/role div, email `<a>`, socials div, copyright div, `FooterWire` → all `data-explode="block"`, except the name `<div className="font-display …">` → `chars`.
 
-- [ ] **Step 4: Build + eyeball the scatter**
+- [x] **Step 4: Build + eyeball the scatter**
 
 Run: `npm run build` → exit 0. In the browser: wheel through all six slides — outgoing glyphs visibly scatter, rain bursts mid-swap, incoming text assembles; `.deck-glyph` spans exist after first transition; re-entering a slide shows intact text (transforms reset).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/components/boot/slide-deck.tsx src/app/page.tsx
@@ -555,11 +555,11 @@ Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>"
 
 **Interfaces:** consumes everything above.
 
-- [ ] **Step 1: Static checks**
+- [x] **Step 1: Static checks**
 
 `npm run build && npm test` → build 0, 2 tests pass. (Lint stays broken repo-wide — pre-existing ESLint 9 config issue, not in scope.)
 
-- [ ] **Step 2: Playwright drive, desktop (1440×900)**
+- [x] **Step 2: Playwright drive, desktop (1440×900)**
 
 1. Load `/`, skip boot gate → `html[data-deck="on"]`, `#hero.deck-active`, body scroll 0.
 2. One wheel-down → lands on `#about` exactly (direction check: if inverted, flip `onDown`/`onUp` and re-run).
@@ -569,8 +569,8 @@ Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>"
 6. On `#projects`: drag the drum canvas → drum rotates, slide unchanged.
 7. `window.scrollY` stays 0 throughout; no console errors.
 
-- [ ] **Step 3: Playwright, mobile (390×844) + reduced-motion context**
+- [x] **Step 3: Playwright, mobile (390×844) + reduced-motion context**
 
 No `data-deck` attribute; page scrolls; all six sections + project index visible; reveals fire. Blog routes unaffected.
 
-- [ ] **Step 4: Report per verification-before-completion; screenshots of a mid-scatter frame and each slide.**
+- [x] **Step 4: Report per verification-before-completion; screenshots of a mid-scatter frame and each slide.**
