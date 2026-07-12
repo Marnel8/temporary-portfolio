@@ -145,7 +145,7 @@ export default function Home() {
 						cols={120}
 						dot={5}
 						opacity={0.32}
-						className="deck-block pointer-events-none absolute left-1/2 top-1/2 h-[84vh] w-auto max-w-none -translate-x-1/2 -translate-y-1/2"
+						className="pointer-events-none absolute left-1/2 top-1/2 h-[84vh] w-auto max-w-none -translate-x-1/2 -translate-y-1/2"
 					/>
 
 					{/* four glitch-cycling corner labels */}
@@ -216,7 +216,7 @@ export default function Home() {
 							cols={96}
 							dot={5}
 							opacity={0.85}
-							className="deck-block reveal mx-auto h-auto w-full max-w-[300px]"
+							className="reveal mx-auto h-auto w-full max-w-[300px]"
 							alt="Marnel holding a laptop"
 						/>
 					</div>

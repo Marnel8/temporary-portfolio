@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { Observer } from "gsap/Observer";
 import { triggerRain } from "./rain-overlay";
+import { getDitherHandle, type DitherHandle } from "./dither-portrait";
 
 /* ═══════════════════════════════════════════════════════════════════════
    SLIDE DECK — desktop-only "channel switch" navigation for the home
@@ -105,6 +106,15 @@ export default function SlideDeck({ children }: { children: React.ReactNode }) {
 		const outBlocks = Array.from(out.querySelectorAll<HTMLElement>(BLOCK_SEL));
 		const innGlyphs = Array.from(inn.querySelectorAll<HTMLElement>(".deck-glyph"));
 		const innBlocks = Array.from(inn.querySelectorAll<HTMLElement>(BLOCK_SEL));
+		// dither portraits scatter their own dots (canvas repaint driven by
+		// a proxy tween — never element transforms, so display:none can't
+		// corrupt them). null handles (image still decoding) are skipped.
+		const handlesIn = (slide: HTMLElement): DitherHandle[] =>
+			Array.from(slide.querySelectorAll<HTMLCanvasElement>("canvas[data-dither]"))
+				.map(getDitherHandle)
+				.filter((h): h is DitherHandle => h !== null);
+		const outDither = handlesIn(out);
+		const innDither = handlesIn(inn);
 		const allGlyphs = [...outGlyphs, ...innGlyphs];
 
 		const tl = gsap.timeline({
@@ -132,6 +142,22 @@ export default function SlideDeck({ children }: { children: React.ReactNode }) {
 			);
 		if (outBlocks.length)
 			tl.to(outBlocks, { opacity: 0, scale: 0.92, duration: 0.4, ease: "power2.in" }, 0);
+		// outgoing portraits: dots fly out + fade over the same window as
+		// the outgoing glyphs
+		outDither.forEach((h) => {
+			h.reseed();
+			const proxy = { p: 0 };
+			tl.to(
+				proxy,
+				{
+					p: 1,
+					duration: 0.5,
+					ease: "power2.in",
+					onUpdate: () => h.draw(proxy.p),
+				},
+				0
+			);
+		});
 		// 2 · midpoint: rain burst covers the swap.
 		// Transform writes must only hit VISIBLE elements: GSAP measures a
 		// display:none element by reparenting it to <html> and restores it
@@ -147,6 +173,14 @@ export default function SlideDeck({ children }: { children: React.ReactNode }) {
 			if (outBlocks.length) gsap.set(outBlocks, { opacity: 1, scale: 1 });
 			out.classList.remove("deck-active");
 			inn.classList.add("deck-active");
+			// portraits: restore the (now hidden) outgoing one intact for its
+			// next entrance; pre-scatter the incoming one before it is shown
+			// so it never flashes assembled
+			outDither.forEach((h) => h.draw(0));
+			innDither.forEach((h) => {
+				h.reseed();
+				h.draw(1);
+			});
 			// scattered start state — same tick as the display flip, so the
 			// assembled slide never paints before it scatters
 			if (innGlyphs.length)
@@ -180,6 +214,21 @@ export default function SlideDeck({ children }: { children: React.ReactNode }) {
 				{ opacity: 1, scale: 1, duration: 0.45, ease: "power2.out" },
 				0.5
 			);
+		// incoming portraits: dots assemble from scatter, same window as
+		// the incoming glyphs
+		innDither.forEach((h) => {
+			const proxy = { p: 1 };
+			tl.to(
+				proxy,
+				{
+					p: 0,
+					duration: 0.55,
+					ease: "power3.out",
+					onUpdate: () => h.draw(proxy.p),
+				},
+				0.5
+			);
+		});
 		if (allGlyphs.length) tl.set(allGlyphs, { willChange: "auto" }, 1.05);
 		// belt-and-braces unlock in case the tab is backgrounded mid-tween
 		setTimeout(() => (lockedRef.current = false), TRANSITION_LOCK_MS);
