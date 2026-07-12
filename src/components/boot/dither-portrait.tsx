@@ -26,6 +26,53 @@ const BAYER = [
 	[15, 7, 13, 5],
 ].map((row) => row.map((v) => (v + 0.5) / 16));
 
+/* ── scatter registry ────────────────────────────────────────────────
+   Each dither canvas remembers its lit dots and a per-dot flight vector
+   so the slide deck can explode/reassemble the portrait. State lives in
+   a WeakMap keyed by the canvas element, so it is discovered from the
+   DOM (getDitherHandle) without prop drilling and is GC'd with the node. */
+
+type DotState = {
+	xs: Float32Array; // dot origin x, canvas pixels
+	ys: Float32Array; // dot origin y, canvas pixels
+	vx: Float32Array; // flight vector x (set by reseed)
+	vy: Float32Array; // flight vector y
+	size: number; // fillRect side, canvas pixels
+	color: string;
+	w: number; // backing-store width
+	h: number; // backing-store height
+};
+
+const dotRegistry = new WeakMap<HTMLCanvasElement, DotState>();
+
+export type DitherHandle = { reseed(): void; draw(progress: number): void };
+
+/** Explode/reassemble handle for a dither canvas, or null if it has not
+    painted its dots yet (image still decoding). progress 0 = intact,
+    1 = fully dispersed + invisible. */
+export function getDitherHandle(canvas: HTMLCanvasElement): DitherHandle | null {
+	const s = dotRegistry.get(canvas);
+	if (!s) return null;
+	const reseed = () => {
+		for (let i = 0; i < s.vx.length; i++) {
+			s.vx[i] = (Math.random() * 2 - 1) * 0.6 * s.w;
+			s.vy[i] = (Math.random() * 2 - 1) * 0.5 * s.h;
+		}
+	};
+	const draw = (p: number) => {
+		const ctx = canvas.getContext("2d");
+		if (!ctx) return;
+		ctx.clearRect(0, 0, s.w, s.h);
+		ctx.fillStyle = s.color;
+		ctx.globalAlpha = 1 - p;
+		for (let i = 0; i < s.xs.length; i++) {
+			ctx.fillRect(s.xs[i] + p * s.vx[i], s.ys[i] + p * s.vy[i], s.size, s.size);
+		}
+		ctx.globalAlpha = 1;
+	};
+	return { reseed, draw };
+}
+
 export default function DitherPortrait({
 	src,
 	cols = 110,
@@ -69,6 +116,11 @@ export default function DitherPortrait({
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
 			ctx.fillStyle = color;
 
+			// collect lit dots so the deck can scatter them later
+			const xs: number[] = [];
+			const ys: number[] = [];
+			const size = dot - 1.5; // gap between dots sells the "bitmap" look
+
 			for (let y = 0; y < rows; y++) {
 				for (let x = 0; x < cols; x++) {
 					const i = (y * cols + x) * 4;
@@ -78,11 +130,28 @@ export default function DitherPortrait({
 					const lum =
 						(0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2]) / 255;
 					if (lum > BAYER[y % 4][x % 4]) {
-						// gap between dots sells the "bitmap" look
-						ctx.fillRect(x * dot, y * dot, dot - 1.5, dot - 1.5);
+						const px = x * dot;
+						const py = y * dot;
+						ctx.fillRect(px, py, size, size);
+						xs.push(px);
+						ys.push(py);
 					}
 				}
 			}
+
+			// register for scatter; reseed once so a first transition works
+			// even before the deck calls reseed itself
+			const state: DotState = {
+				xs: Float32Array.from(xs),
+				ys: Float32Array.from(ys),
+				vx: new Float32Array(xs.length),
+				vy: new Float32Array(xs.length),
+				size,
+				color,
+				w: canvas.width,
+				h: canvas.height,
+			};
+			dotRegistry.set(canvas, state);
 		}).catch(() => {
 			/* image failed to load — leave the canvas empty */
 		});
@@ -91,6 +160,7 @@ export default function DitherPortrait({
 	return (
 		<canvas
 			ref={canvasRef}
+			data-dither
 			className={className}
 			style={{ opacity }}
 			role={alt ? "img" : undefined}
