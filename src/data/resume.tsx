@@ -4,7 +4,7 @@ import { HomeIcon } from "lucide-react";
 export const DATA = {
 	name: "Marnel Valentin",
 	initials: "MV",
-	url: "https://marnelvalentin.com",
+	url: "https://me.mvsoftwares.space",
 	location: "Mamburao, Occidental Mindoro",
 	locationLink:
 		"https://www.google.com/maps/place/Mamburao,+Occidental+Mindoro",
@@ -163,15 +163,17 @@ export const DATA = {
 			dates: "December 2024 - January 2025",
 			active: false,
 			description:
-				"A web application that allows users to buy and sell items on the Batangas State University campus.",
+				"A multi-vendor e-commerce web application that allows users to buy and sell items on the Batangas State University campus.",
 			technologies: [
 				"Next.js",
-				"MySQL",
-				"Sequelize",
+				"NestJS",
+				"PostgreSQL",
 				"TailwindCSS",
-				"Shadcn UI",
 				"Tanstack Query",
+				"Zustand",
 				"Typescript",
+				"Modular Monolith",
+				"Micro Frontends",
 			],
 			links: [
 				{

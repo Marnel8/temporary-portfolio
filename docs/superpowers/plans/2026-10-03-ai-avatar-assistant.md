@@ -892,7 +892,7 @@ OPENAI_REALTIME_MODEL=
 # Synthesia workspace API key + a gallery (later: personal) avatar id. Leave the id empty for voice-only.
 SYNTHESIA_API_KEY=
 SYNTHESIA_AVATAR_ID=
-# Where /api/avatar/context lives: http://localhost:3000 locally, https://marnelvalentin.com in prod
+# Where /api/avatar/context lives: http://localhost:3000 locally, https://me.mvsoftwares.space in prod
 SITE_URL=http://localhost:3000
 ```
 
@@ -1234,7 +1234,7 @@ press the assistant button.
 ```bash
 lk cloud auth
 lk agent create              # first time; generates livekit.toml + Dockerfile — commit both
-lk agent update-secrets --secrets-file .env.local   # set SITE_URL=https://marnelvalentin.com first
+lk agent update-secrets --secrets-file .env.local   # set SITE_URL=https://me.mvsoftwares.space first
 lk agent deploy              # subsequent releases
 ```
 
@@ -1294,7 +1294,7 @@ lk cloud auth
 lk agent create
 ```
 
-Set `SITE_URL=https://marnelvalentin.com` in `agent/.env.local`, then:
+Set `SITE_URL=https://me.mvsoftwares.space` in `agent/.env.local`, then:
 
 ```bash
 lk agent update-secrets --secrets-file .env.local
