@@ -13,10 +13,11 @@ export async function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: {
+    slug: string;
+  };
 }): Promise<Metadata | undefined> {
-  const { slug } = await params;
-  let post = await getPost(slug);
+  let post = await getPost(params.slug);
 
   let {
     title,
@@ -53,17 +54,18 @@ export async function generateMetadata({
 export default async function Blog({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: {
+    slug: string;
+  };
 }) {
-  const { slug } = await params;
-  let post = await getPost(slug);
+  let post = await getPost(params.slug);
 
   if (!post) {
     notFound();
   }
 
   return (
-    <section id="blog" className="relative z-10 mx-auto max-w-2xl px-6 py-28">
+    <section id="blog">
       <script
         type="application/ld+json"
         suppressHydrationWarning
@@ -86,19 +88,18 @@ export default async function Blog({
           }),
         }}
       />
-      <h1 className="max-w-[650px] font-mono text-2xl font-bold uppercase tracking-tight text-pale">
+      <h1 className="title font-medium text-2xl tracking-tighter max-w-[650px]">
         {post.metadata.title}
       </h1>
       <div className="flex justify-between items-center mt-2 mb-8 text-sm max-w-[650px]">
         <Suspense fallback={<p className="h-5" />}>
-          <p className="font-mono text-xs text-phos/60">
+          <p className="text-sm text-neutral-600 dark:text-neutral-400">
             {formatDate(post.metadata.publishedAt)}
           </p>
         </Suspense>
       </div>
-      {/* prose body stays Inter (font-sans) for readability; headings/links go phosphor */}
       <article
-        className="prose prose-invert font-sans prose-headings:font-mono prose-headings:uppercase prose-headings:tracking-tight prose-a:text-phos prose-code:text-pale prose-hr:border-phos/15"
+        className="prose dark:prose-invert"
         dangerouslySetInnerHTML={{ __html: post.source }}
       ></article>
     </section>

@@ -1,401 +1,352 @@
-"use client";
-
-import { useLayoutEffect } from "react";
-import Link from "next/link";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { HackathonCard } from "@/components/hackathon-card";
+import BlurFade from "@/components/magicui/blur-fade";
+import BlurFadeText from "@/components/magicui/blur-fade-text";
+import { ProjectCard } from "@/components/project-card";
+import { ResumeCard } from "@/components/resume-card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DATA } from "@/data/resume";
-import BootGate from "@/components/boot/boot-gate";
-import DitherPortrait from "@/components/boot/dither-portrait";
-import ScrambleCycle from "@/components/boot/scramble-cycle";
-import TypedLog from "@/components/boot/typed-log";
-import ProjectDrum from "@/components/boot/project-drum";
-import PixelMark from "@/components/boot/pixel-mark";
-import FooterWire from "@/components/boot/footer-wire";
-import { triggerRain } from "@/components/boot/rain-overlay";
-import SlideDeck, { deckEligible } from "@/components/boot/slide-deck";
+import Link from "next/link";
+import Markdown from "react-markdown";
 
-/* ═══════════════════════════════════════════════════════════════════════
-   BOOT SEQUENCE — phosphor-terminal portfolio home page.
-   All copy comes from src/data/resume.tsx; this file is layout + motion.
-   Palette: boot #010603 · pale #C8FFDD · phos #00FF6A (single accent)
-   Conventions used by every section:
-   - `.reveal`     → fades/slides in when scrolled into view
-   - `[data-rain]` → fires a digital-rain burst when the section enters
-   ═══════════════════════════════════════════════════════════════════ */
+const BLUR_FADE_DELAY = 0.05;
 
-/* hero boot readout — real facts only (resume.tsx + stated focus) */
-const LOG_LINES = [
-	"whoami ............. marnel valentin",
-	"role ............... software engineer — full-stack web",
-	"edu ................ MS data science, batangas state university (2025—present)",
-	"focus .............. web systems · data analysis · security (leaning)",
-	`location ........... ${DATA.location.toLowerCase()}`,
-	"status ............. building — freelance + university research",
-];
-
-/* corner label word sets — actual roles/interests, no filler */
-const CORNER_TL = ["SOFTWARE ENGINEER", "WEB DEVELOPER"] as const;
-const CORNER_TR = ["MS DATA SCIENCE", "FORECASTING / EDA"] as const;
-const CORNER_BL = ["FULL-STACK", "REACT · NEXT · NODE"] as const;
-const CORNER_BR = ["SECURITY-LEANING", "AI-ASSISTED DEV"] as const;
-
-/* ── shared helpers ──────────────────────────────────────────────────── */
-
-/* numbered section header, e.g. "[02] OPS LOG" */
-function SectionTag({ index, title }: { index: string; title: string }) {
-	return (
-		<div data-explode="block" className="reveal mb-12 flex items-center gap-4 font-mono">
-			<span className="text-[11px] tracking-[0.2em] text-phos">[{index}]</span>
-			<span className="h-px w-12 bg-phos/25" />
-			<h2 className="text-[11px] uppercase tracking-[0.35em] text-phos/60">
-				{title}
-			</h2>
-		</div>
-	);
-}
-
-/* small outlined mono status chip */
-function Chip({ children }: { children: React.ReactNode }) {
-	return (
-		<span className="inline-flex items-center border border-phos/30 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.2em] text-phos/80">
-			{children}
+const SectionHeader = ({
+	index,
+	title,
+	caption,
+}: {
+	index: string;
+	title: string;
+	caption?: string;
+}) => (
+	<div className="flex items-baseline gap-4 mb-5">
+		<span className="eyebrow tabular shrink-0">
+			{index} <span className="opacity-40">—</span>
 		</span>
-	);
-}
+		<h2 className="text-lg font-semibold tracking-tight">{title}</h2>
+		<div className="flex-1 h-px bg-border translate-y-[-2px]" />
+		{caption && (
+			<span className="eyebrow tabular hidden sm:inline shrink-0">
+				{caption}
+			</span>
+		)}
+	</div>
+);
 
-export default function Home() {
-	useLayoutEffect(() => {
-		gsap.registerPlugin(ScrollTrigger);
-
-		/* hero intro — waits for the boot gate's "bootdone" signal so the
-		   gate wipe and the name reveal never overlap */
-		const intro = () => {
-			gsap.fromTo(
-				".hero-name span",
-				{ yPercent: 55, opacity: 0 },
-				{ yPercent: 0, opacity: 1, duration: 0.9, stagger: 0.12, ease: "power3.out" }
-			);
-		};
-		let introArmed = false;
-		if (document.documentElement.dataset.booted === "1") {
-			intro();
-		} else {
-			introArmed = true;
-			window.addEventListener("bootdone", intro, { once: true });
-		}
-
-		/* Scroll-driven reveals exist only in scroll mode. In deck mode the
-		   fromTo would render everything invisible with no scroll to ever
-		   reveal it — the deck's own timelines handle entrances there. */
-		let ctx: gsap.Context | undefined;
-		if (!deckEligible()) {
-			ctx = gsap.context(() => {
-				// generic reveal-on-scroll for everything marked .reveal
-				gsap.utils.toArray<HTMLElement>(".reveal").forEach((el) => {
-					gsap.fromTo(
-						el,
-						{ y: 28, opacity: 0 },
-						{
-							y: 0,
-							opacity: 1,
-							duration: 0.7,
-							ease: "power2.out",
-							scrollTrigger: { trigger: el, start: "top 82%" },
-						}
-					);
-				});
-
-				// digital-rain burst as each major section takes the viewport
-				// (rain-overlay rate-limits itself, so fast scrolling can't strobe)
-				gsap.utils.toArray<HTMLElement>("[data-rain]").forEach((el) => {
-					ScrollTrigger.create({
-						trigger: el,
-						start: "top 55%",
-						onEnter: () => triggerRain(),
-						onEnterBack: () => triggerRain(),
-					});
-				});
-			});
-		}
-
-		return () => {
-			if (introArmed) window.removeEventListener("bootdone", intro);
-			ctx?.revert();
-		};
-	}, []);
+export default function Page() {
+	const firstName = DATA.name.split(" ")[0];
+	const projectsCount = String(DATA.projects.length).padStart(2, "0");
+	const workCount = String(DATA.work.length).padStart(2, "0");
+	const skillsCount = String(DATA.skills.length).padStart(2, "0");
 
 	return (
-		<>
-			{/* typed BIOS gate — once per tab session, click/Enter/Esc skips */}
-			<BootGate />
-
-			<main className="relative">
-				<SlideDeck>
-				{/* ── [00] HERO ─────────────────────────────────────────── */}
-				<section
-					id="hero"
-					data-slide
-					data-rain
-					className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-6"
-				>
-					{/* ghosted ordered-dither portrait behind the name */}
-					<DitherPortrait
-						src="/photos/hero.png"
-						cols={120}
-						dot={5}
-						opacity={0.32}
-						className="pointer-events-none absolute left-1/2 top-1/2 h-[84vh] w-auto max-w-none -translate-x-1/2 -translate-y-1/2"
-					/>
-
-					{/* four glitch-cycling corner labels */}
-					<div data-explode="block" className="pointer-events-none absolute inset-x-6 top-20 z-10 flex justify-between font-mono text-[10px] tracking-[0.3em] text-phos/60 sm:inset-x-14">
-						<ScrambleCycle words={CORNER_TL} />
-						<ScrambleCycle words={CORNER_TR} startDelay={950} />
-					</div>
-					<div data-explode="block" className="pointer-events-none absolute inset-x-6 bottom-24 z-10 flex justify-between font-mono text-[10px] tracking-[0.3em] text-phos/60 sm:inset-x-14">
-						<ScrambleCycle words={CORNER_BL} startDelay={1900} />
-						<ScrambleCycle words={CORNER_BR} startDelay={2850} />
-					</div>
-
-					{/* the name — massive, blocky, solid fills */}
-					<h1 className="hero-name relative z-10 text-center font-display uppercase leading-[0.88] text-pale">
-						<span data-explode="chars" className="block text-[clamp(3rem,12.5vw,10rem)]">Marnel</span>
-						<span data-explode="chars" className="phos-glow block text-[clamp(3rem,12.5vw,10rem)] text-phos">
-							Valentin
-						</span>
-					</h1>
-
-					{/* typed system readout */}
-					<TypedLog
-						lines={LOG_LINES}
-						startDelay={350}
-						className="deck-block relative z-10 mt-10 w-full max-w-xl font-mono text-[11px] text-phos/80 sm:text-xs"
-					/>
-
-					{/* scroll cue */}
-					<div data-explode="block" className="absolute bottom-10 left-1/2 z-10 -translate-x-1/2 font-mono text-[10px] tracking-[0.4em] text-phos/50">
-						<span className="scroll-cue">▼ SCROLL</span>
-					</div>
-				</section>
-
-				{/* ── [01] OPERATOR PROFILE (about) ─────────────────────── */}
-				<section id="about" data-slide data-rain className="relative mx-auto max-w-5xl px-6 py-28 sm:py-36">
-					<SectionTag index="01" title="operator profile" />
-					<div className="grid items-center gap-14 md:grid-cols-[1fr_minmax(220px,320px)]">
-						<div>
-							<TypedLog
-								lines={["cat /usr/marnel/about.txt"]}
-								className="deck-block mb-6 font-mono text-xs text-phos/60"
-							/>
-							<p data-explode="words" className="reveal max-w-prose font-mono text-sm leading-relaxed text-pale/85">
-								{DATA.summary}
-							</p>
-							<div data-explode="block" className="reveal mt-8 flex flex-wrap gap-3">
-								<Chip>MS data science — in progress</Chip>
-								<Chip>BS information technology · 2019–2023</Chip>
-								<Chip>{DATA.location}</Chip>
-							</div>
-							{/* capability list — plain mono tags, no meters */}
-							<div className="reveal mt-10">
-								<div data-explode="chars" className="mb-4 font-mono text-[10px] uppercase tracking-[0.3em] text-phos/50">
-									&gt; ls /skills
-								</div>
-								<ul data-explode="words" className="flex max-w-prose flex-wrap gap-x-4 gap-y-2 font-mono text-[11px] text-pale/70">
-									{DATA.skills.map((skill) => (
-										<li key={skill} className="before:mr-1 before:text-phos/50 before:content-['·']">
-											{skill}
-										</li>
-									))}
-								</ul>
-							</div>
+		<main className="flex flex-col min-h-[100dvh] space-y-16 sm:space-y-20">
+			{/* ───── hero ─────────────────────────────────────────────── */}
+			<section id="hero" className="pt-2">
+				<div className="mx-auto w-full max-w-2xl">
+					<BlurFade delay={BLUR_FADE_DELAY}>
+						<div className="eyebrow mb-6 flex items-center gap-3 overflow-hidden">
+							<span className="inline-block size-1.5 shrink-0 rounded-full bg-[hsl(var(--accent))] animate-pulse" />
+							<span className="truncate">
+								Available for select projects
+								<span className="hidden sm:inline"> · {DATA.location}</span>
+							</span>
 						</div>
-						{/* free-floating dithered cutout — deliberately no panel/border */}
-						<DitherPortrait
-							src="/photos/about.png"
-							cols={96}
-							dot={5}
-							opacity={0.85}
-							className="reveal mx-auto h-auto w-full max-w-[300px]"
-							alt="Marnel holding a laptop"
-						/>
-					</div>
-				</section>
+					</BlurFade>
 
-				{/* ── [02] OPS LOG (experience) ─────────────────────────── */}
-				<section id="experience" data-slide data-rain className="mx-auto max-w-5xl px-6 py-28">
-					<SectionTag index="02" title="ops log — experience" />
-					<ol className="space-y-12">
-						{DATA.work.map((job) => (
-							<li
-								key={job.company + job.start}
-								className="reveal grid gap-2 border-l border-phos/20 pl-6 sm:grid-cols-[190px_1fr] sm:gap-8"
-							>
-								{/* timestamp column, log-file style */}
-								<div data-explode="chars" className="font-mono text-[11px] uppercase tracking-[0.15em] text-phos/50">
-									[{job.start} — {job.end}]
-								</div>
-								<div>
-									<h3 data-explode="chars" className="font-mono text-sm font-bold uppercase tracking-[0.08em] text-pale">
-										{job.title}
-									</h3>
-									<div data-explode="block" className="mt-1 font-mono text-xs text-phos/70">
-										{job.href ? (
-											<Link href={job.href} target="_blank" className="transition-colors hover:text-phos">
-												{job.company}
-											</Link>
-										) : (
-											job.company
-										)}
-										<span className="text-phos/40"> · {job.location}</span>
-									</div>
-									<p data-explode="words" className="mt-3 max-w-prose font-mono text-xs leading-relaxed text-pale/70">
-										{job.description}
-									</p>
-								</div>
-							</li>
-						))}
-					</ol>
-
-				</section>
-
-				{/* ── [03] TRAINING (education) ─────────────────────────── */}
-				<section id="education" data-slide data-rain className="mx-auto max-w-5xl px-6 py-28">
-					<SectionTag index="03" title="training — education" />
-					<ol className="space-y-8">
-							{DATA.education.map((edu) => (
-								<li
-									key={edu.degree}
-									className="reveal grid gap-2 border-l border-phos/20 pl-6 sm:grid-cols-[190px_1fr] sm:gap-8"
+					<div className="flex items-start justify-between gap-6">
+						<div className="flex-col flex flex-1 space-y-3">
+							<h1 className="text-4xl sm:text-6xl font-semibold tracking-[-0.04em] leading-[0.95]">
+								<span className="reveal-wipe inline-block">Hi, I&apos;m</span>{" "}
+								<span
+									className="reveal-wipe inline-block text-[hsl(var(--accent))]"
+									style={{ animationDelay: "0.18s" }}
 								>
-									<div data-explode="chars" className="font-mono text-[11px] uppercase tracking-[0.15em] text-phos/50">
-										[{edu.start} — {edu.end}]
-									</div>
-									<div>
-										<h3 data-explode="chars" className="font-mono text-sm font-bold uppercase tracking-[0.08em] text-pale">
-											{edu.degree}
-										</h3>
-										<Link
-											href={edu.href}
-											target="_blank"
-											data-explode="block"
-											className="mt-1 inline-block font-mono text-xs text-phos/70 transition-colors hover:text-phos"
-										>
-											{edu.school}
-										</Link>
-									</div>
-								</li>
-							))}
-					</ol>
-				</section>
-
-				{/* ── [04] PROJECT ARCHIVE ──────────────────────────────── */}
-				<section id="projects" data-slide data-rain className="mx-auto max-w-6xl px-6 py-28">
-					<SectionTag index="04" title="project archive" />
-
-					{/* 3D drum — drag or use the ‹ › buttons to rotate */}
-					<div data-explode="block" className="reveal">
-						<ProjectDrum />
-					</div>
-
-					{/* plain HTML index — SEO + fallback when WebGL is unavailable
-					    (hidden in deck mode; the drum shows every project there) */}
-					<ol data-deck-hide className="mt-16 divide-y divide-phos/10 border-y border-phos/10">
-						{DATA.projects.map((project, i) => (
-							<li
-								key={project.title}
-								className="reveal grid gap-3 py-6 sm:grid-cols-[56px_1fr_auto] sm:gap-6"
-							>
-								<span className="font-mono text-xs text-phos/50">
-									{String(i + 1).padStart(2, "0")}
+									{firstName}
 								</span>
-								<div>
-									<h3 className="font-mono text-sm font-bold uppercase tracking-[0.06em] text-pale">
-										{project.title}
-									</h3>
-									<p className="mt-1 max-w-prose font-mono text-xs leading-relaxed text-pale/70">
-										{project.description}
-									</p>
-									<p className="mt-2 font-mono text-[10px] uppercase tracking-[0.12em] text-phos/60">
-										{project.technologies.join(" · ")}
-									</p>
-								</div>
-								<div className="flex items-start gap-3 font-mono text-xs">
-									{project.links.map((link) => (
-										<Link
-											key={link.type}
-											href={link.href || "#"}
-											target="_blank"
-											className="text-phos/70 underline-offset-4 transition-colors hover:text-phos hover:underline"
-										>
-											[{link.type.toLowerCase()}]
-										</Link>
-									))}
-								</div>
-							</li>
+								<span
+									className="reveal-wipe inline-block"
+									style={{ animationDelay: "0.32s" }}
+								>
+									.
+								</span>
+								<span className="caret align-baseline" aria-hidden />
+							</h1>
+
+							<BlurFadeText
+								className="max-w-[520px] text-base sm:text-lg text-muted-foreground leading-relaxed pt-2"
+								delay={BLUR_FADE_DELAY * 5}
+								text={DATA.description}
+							/>
+						</div>
+
+						<BlurFade delay={BLUR_FADE_DELAY * 2}>
+							<div className="relative shrink-0">
+								<Avatar className="size-20 sm:size-24 rounded-full ring-1 ring-border ring-offset-2 ring-offset-background">
+									<AvatarImage
+										alt={DATA.name}
+										src={DATA.avatarUrl}
+										className="object-cover"
+									/>
+									<AvatarFallback>{DATA.initials}</AvatarFallback>
+								</Avatar>
+								<span className="absolute -bottom-1 -right-1 size-3 rounded-full bg-emerald-500 ring-2 ring-background" />
+							</div>
+						</BlurFade>
+					</div>
+
+					{/* meta row */}
+					<BlurFade delay={BLUR_FADE_DELAY * 6}>
+						<div className="mt-10 grid grid-cols-3 gap-6 border-y border-border py-4">
+							<div>
+								<div className="eyebrow mb-1">Role</div>
+								<div className="text-sm font-medium">Web Developer</div>
+							</div>
+							<div>
+								<div className="eyebrow mb-1">Based in</div>
+								<div className="text-sm font-medium">Mindoro, PH</div>
+							</div>
+							<div>
+								<div className="eyebrow mb-1">Years</div>
+								<div className="text-sm font-medium tabular">2023 — Now</div>
+							</div>
+						</div>
+					</BlurFade>
+				</div>
+			</section>
+
+			{/* ───── about ────────────────────────────────────────────── */}
+			<section id="about">
+				<BlurFade delay={BLUR_FADE_DELAY * 7}>
+					<SectionHeader index="01" title="About" />
+				</BlurFade>
+				<BlurFade delay={BLUR_FADE_DELAY * 8}>
+					<Markdown className="prose max-w-full text-pretty font-sans text-[15px] leading-relaxed text-foreground/80 dark:prose-invert">
+						{DATA.summary}
+					</Markdown>
+				</BlurFade>
+			</section>
+
+			{/* ───── work ─────────────────────────────────────────────── */}
+			<section id="work">
+				<div className="flex min-h-0 flex-col">
+					<BlurFade delay={BLUR_FADE_DELAY * 9}>
+						<SectionHeader index="02" title="Experience" caption={`${workCount} positions`} />
+					</BlurFade>
+					<div className="flex flex-col gap-y-2">
+						{DATA.work.map((work, id) => (
+							<BlurFade
+								key={work.company}
+								delay={BLUR_FADE_DELAY * 10 + id * 0.05}
+							>
+								<ResumeCard
+									key={work.company}
+									logoUrl={work.logoUrl}
+									altText={work.company}
+									title={work.company}
+									subtitle={work.title}
+									href={work.href}
+									badges={work.badges}
+									period={`${work.start} — ${work.end ?? "Present"}`}
+									description={work.description}
+								/>
+							</BlurFade>
 						))}
-					</ol>
-				</section>
+					</div>
+				</div>
+			</section>
 
-				{/* ── [05] CONTACT / FOOTER ─────────────────────────────── */}
-				<footer
-					id="contact"
-					data-slide
-					data-rain
-					className="relative overflow-hidden border-t border-phos/15 px-6 py-24"
-				>
-					{/* rotating wireframe icosphere + particles, behind the text */}
-					<FooterWire className="deck-block pointer-events-none absolute inset-0 opacity-60" />
+			{/* ───── education ────────────────────────────────────────── */}
+			<section id="education">
+				<div className="flex min-h-0 flex-col">
+					<BlurFade delay={BLUR_FADE_DELAY * 11}>
+						<SectionHeader index="03" title="Education" />
+					</BlurFade>
+					<div className="flex flex-col gap-y-2">
+						{DATA.education.map((education, id) => (
+							<BlurFade
+								key={education.school}
+								delay={BLUR_FADE_DELAY * 12 + id * 0.05}
+							>
+								<ResumeCard
+									key={education.school}
+									href={education.href}
+									logoUrl={education.logoUrl}
+									altText={education.school}
+									title={education.school}
+									subtitle={education.degree}
+									period={`${education.start} — ${education.end}`}
+								/>
+							</BlurFade>
+						))}
+					</div>
+				</div>
+			</section>
 
-					<div className="relative z-10 mx-auto flex max-w-5xl flex-col items-center gap-8 text-center">
-						<PixelMark size={44} className="deck-block reveal text-phos" />
+			{/* ───── skills ───────────────────────────────────────────── */}
+			<section id="skills">
+				<div className="flex min-h-0 flex-col">
+					<BlurFade delay={BLUR_FADE_DELAY * 13}>
+						<SectionHeader index="04" title="Stack" caption={`${skillsCount} tools`} />
+					</BlurFade>
+					<BlurFade delay={BLUR_FADE_DELAY * 14}>
+						<p className="text-[15px] leading-loose text-foreground/85 flex flex-wrap gap-y-0">
+							{DATA.skills.map((skill, i) => (
+								<span key={skill} className="whitespace-nowrap">
+									<span className="hover:text-[hsl(var(--accent))] transition-colors duration-200">
+										{skill}
+									</span>
+									{i < DATA.skills.length - 1 && (
+										<span className="text-muted-foreground/60 px-1.5">+</span>
+									)}
+								</span>
+							))}
+						</p>
+					</BlurFade>
+				</div>
+			</section>
 
-						<div className="reveal">
-							<div data-explode="chars" className="font-display text-2xl uppercase tracking-wide text-pale">
-								{DATA.name}
-							</div>
-							<div data-explode="block" className="mt-2 font-mono text-[11px] uppercase tracking-[0.25em] text-phos/60">
-								software engineer · {DATA.location}
-							</div>
-						</div>
-
-						<a
-							href={`mailto:${DATA.contact.email}`}
-							data-explode="block"
-							className="reveal border border-phos/40 px-6 py-3 font-mono text-xs tracking-[0.2em] text-phos transition-colors hover:border-phos"
+			{/* ───── projects ─────────────────────────────────────────── */}
+			<section id="projects">
+				<BlurFade delay={BLUR_FADE_DELAY * 15}>
+					<SectionHeader
+						index="05"
+						title="Selected Work"
+						caption={`${projectsCount} projects`}
+					/>
+				</BlurFade>
+				<BlurFade delay={BLUR_FADE_DELAY * 16}>
+					<p className="text-[15px] leading-relaxed text-foreground/70 max-w-[560px] mb-8">
+						A handful of things I&apos;ve shipped — full-stack web apps,
+						platforms, and a couple experiments. Click any card to learn more.
+					</p>
+				</BlurFade>
+				<div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+					{DATA.projects.map((project, id) => (
+						<BlurFade
+							key={project.title}
+							delay={BLUR_FADE_DELAY * 17 + id * 0.04}
 						>
-							&gt; SEND_TRANSMISSION — {DATA.contact.email}
-						</a>
+							<ProjectCard
+								index={String(id + 1).padStart(2, "0")}
+								href={project.href}
+								key={project.title}
+								title={project.title}
+								description={project.description}
+								dates={project.dates}
+								tags={project.technologies}
+								image={project.image}
+								video={project.video}
+								links={project.links}
+							/>
+						</BlurFade>
+					))}
+				</div>
+			</section>
 
-						{/* social links in outlined squares */}
-						<div data-explode="block" className="reveal flex gap-3">
-							{Object.values(DATA.contact.social)
-								.filter((social) => social.navbar)
-								.map((social) => {
-									const Icon = social.icon;
-									return (
-										<Link
-											key={social.name}
-											href={social.url}
-											target="_blank"
-											aria-label={social.name}
-											className="flex h-10 w-10 items-center justify-center border border-phos/30 text-phos/70 transition-colors hover:border-phos hover:text-phos"
-										>
-											<Icon className="size-4" />
-										</Link>
-									);
-								})}
+			{/* ───── trainings ────────────────────────────────────────── */}
+			<section id="hackathons">
+				<BlurFade delay={BLUR_FADE_DELAY * 18}>
+					<SectionHeader index="06" title="Trainings & Certifications" />
+				</BlurFade>
+				<BlurFade delay={BLUR_FADE_DELAY * 19}>
+					<p className="text-[15px] leading-relaxed text-foreground/70 max-w-[560px] mb-8">
+						After graduating, I joined training programs to deepen my software
+						engineering and cloud computing fundamentals.
+					</p>
+				</BlurFade>
+				<BlurFade delay={BLUR_FADE_DELAY * 20}>
+					<ul className="ml-1.5 border-l border-border">
+						{DATA.trainings.map((project, id) => (
+							<BlurFade
+								key={project.title + project.dates}
+								delay={BLUR_FADE_DELAY * 21 + id * 0.05}
+							>
+								<HackathonCard
+									title={project.title}
+									description={project.description}
+									location={project.location}
+									dates={project.dates}
+									image={project.image}
+									links={project.links}
+								/>
+							</BlurFade>
+						))}
+					</ul>
+				</BlurFade>
+			</section>
+
+			{/* ───── contact ──────────────────────────────────────────── */}
+			<section id="contact">
+				<BlurFade delay={BLUR_FADE_DELAY * 22}>
+					<SectionHeader index="07" title="Contact" />
+				</BlurFade>
+				<BlurFade delay={BLUR_FADE_DELAY * 23}>
+					<div className="grid sm:grid-cols-5 gap-6 items-start">
+						<div className="sm:col-span-3 space-y-3">
+							<h3 className="text-2xl sm:text-3xl font-semibold tracking-[-0.02em] leading-tight">
+								Have an idea? <br />
+								<span className="text-[hsl(var(--accent))]">Let&apos;s build it.</span>
+							</h3>
+							<p className="text-[15px] leading-relaxed text-foreground/70 max-w-[420px]">
+								Want to chat? Shoot me a DM{" "}
+								<Link
+									href={DATA.contact.social.X.url}
+									className="link-underline text-foreground font-medium"
+								>
+									on Twitter
+								</Link>{" "}
+								or send an email. I&apos;ll respond whenever I can — I ignore
+								all soliciting.
+							</p>
 						</div>
-
-						<div data-explode="block" className="reveal font-mono text-[10px] tracking-[0.3em] text-phos/40">
-							© {new Date().getFullYear()} — SYSTEM ONLINE
+						<div className="sm:col-span-2 space-y-3 sm:border-l sm:border-border sm:pl-6">
+							<div>
+								<div className="eyebrow mb-1">Email</div>
+								<Link
+									href={`mailto:${DATA.contact.email}`}
+									className="link-underline text-sm font-medium break-all"
+								>
+									{DATA.contact.email}
+								</Link>
+							</div>
+							<div>
+								<div className="eyebrow mb-1">Phone</div>
+								<div className="text-sm font-medium tabular">
+									{DATA.contact.phone}
+								</div>
+							</div>
+							<div>
+								<div className="eyebrow mb-1">Elsewhere</div>
+								<div className="flex flex-wrap gap-x-3 gap-y-1 text-sm">
+									{Object.entries(DATA.contact.social)
+										.filter(([_, s]) => s.navbar)
+										.map(([name, social]) => (
+											<Link
+												key={name}
+												href={social.url}
+												className="link-underline font-medium"
+											>
+												{name}
+											</Link>
+										))}
+								</div>
+							</div>
 						</div>
 					</div>
-				</footer>
+				</BlurFade>
+			</section>
 
-				{/* SECTIONS-END */}
-				</SlideDeck>
-			</main>
-		</>
+			{/* ───── colophon ─────────────────────────────────────────── */}
+			<BlurFade delay={BLUR_FADE_DELAY * 24}>
+				<footer className="pt-8 border-t border-border flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+					<span>© {new Date().getFullYear()} Marnel Valentin</span>
+					<span className="hidden sm:inline">
+						Set in Geist · Built with Next.js
+					</span>
+					<span>End of document</span>
+				</footer>
+			</BlurFade>
+		</main>
 	);
 }
