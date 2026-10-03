@@ -1,5 +1,5 @@
 import Navbar from "@/components/navbar";
-import { ThemeProvider } from "@/components/theme-provider";
+import { LENS_INIT_SCRIPT, LensProvider } from "@/components/lens/lens-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { DATA } from "@/data/resume";
 import { cn } from "@/lib/utils";
@@ -7,8 +7,17 @@ import { SmoothCursor } from "@/components/ui/smooth-cursor";
 import type { Metadata } from "next";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
+import { Newsreader } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next"
 import "./globals.css";
+
+// Heading face for the data science & AI lens (software uses Geist).
+const newsreader = Newsreader({
+	subsets: ["latin"],
+	variable: "--font-serif",
+	display: "swap",
+	adjustFontFallback: false,
+});
 
 export const metadata: Metadata = {
 	metadataBase: new URL(DATA.url),
@@ -51,12 +60,12 @@ export default function RootLayout({
 }: Readonly<{
 	children: React.ReactNode;
 }>) {
-	const year = new Date().getFullYear();
 	return (
 		<html
 			lang="en"
 			suppressHydrationWarning
-			className={cn(GeistSans.variable, GeistMono.variable)}
+			data-lens="swe"
+			className={cn(GeistSans.variable, GeistMono.variable, newsreader.variable)}
 			style={
 				{
 					"--font-sans": GeistSans.style.fontFamily,
@@ -64,27 +73,18 @@ export default function RootLayout({
 				} as React.CSSProperties
 			}
 		>
+			<head>
+				{/* sets data-lens before first paint (from ?view= or the saved choice) */}
+				<script dangerouslySetInnerHTML={{ __html: LENS_INIT_SCRIPT }} />
+			</head>
 			<body
 				className={cn(
-					"grain min-h-screen bg-background font-sans antialiased relative",
+					"min-h-screen bg-background font-sans antialiased relative",
 					GeistSans.className
 				)}
 			>
-				<ThemeProvider attribute="class" defaultTheme="light">
+				<LensProvider>
 					<TooltipProvider delayDuration={0}>
-						{/* fixed wordmark · top-left */}
-						<div className="pointer-events-none fixed top-5 left-5 z-40 hidden sm:flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-							<span className="inline-block size-1.5 rounded-full bg-[hsl(var(--accent))]" />
-							<span>MV</span>
-							<span aria-hidden>/</span>
-							<span className="tabular">{year}</span>
-						</div>
-
-						{/* fixed page label · top-right */}
-						<div className="pointer-events-none fixed top-5 right-5 z-40 hidden sm:block font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-							<span aria-hidden>/ </span>portfolio
-						</div>
-
 						<div className="max-w-2xl mx-auto py-16 sm:py-24 px-6 relative z-10">
 							{children}
 						</div>
@@ -93,7 +93,7 @@ export default function RootLayout({
 						<SmoothCursor />
 						<Analytics />
 					</TooltipProvider>
-				</ThemeProvider>
+				</LensProvider>
 			</body>
 		</html>
 	);

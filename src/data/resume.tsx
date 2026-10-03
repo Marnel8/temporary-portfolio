@@ -158,106 +158,8 @@ export const DATA = {
 	],
 	projects: [
 		{
-			title: "BatStateU RMS",
-			href: "",
-			dates: "Feb 2023 - May 2023",
-			active: false,
-			description:
-				"Efficiently explore, publish, and manage diverse research papers on a streamlined web platform for comprehensive research management.",
-			technologies: ["HTML", "CSS", "JavaScript", "PHP", "MySQL"],
-			links: [
-				{
-					type: "Source",
-					href: "ps://github.com/gitcommit222/new-rms-webdev",
-					icon: <Icons.github className="size-3" />,
-				},
-			],
-			image: "/batstateuproj.png",
-			video: "",
-		},
-		{
-			title: "TODDS",
-			href: "",
-			dates: "October 2023 - January 2023",
-			active: false,
-			description:
-				"Collaborate with RakSquad Company to create a full stack MERN application for their client.",
-			technologies: ["Next.js", "MongoDB", "Mongoose", "TailwindCSS", "Redux"],
-			links: [
-				{
-					type: "Website",
-					href: "",
-					icon: <Icons.globe className="size-3" />,
-				},
-			],
-			image: "/todds.png",
-			video: "",
-		},
-		{
-			title: "Metamorphose AI",
-			href: "https://metamorphose-fcvnu3je6-gitcommit222s-projects.vercel.app/",
-			dates: "Jan 2024 - Feb 2024",
-			active: true,
-			description:
-				"A full stack Software-as-a-Service(SaaS) application that features photo manipulation with artificial intelligence API",
-			technologies: [
-				"Next.js",
-				"Typescript",
-				"MongoDB",
-				"Mongoose",
-				"TailwindCSS",
-				"Stripe",
-				"Shadcn UI",
-				"Clerk",
-			],
-			links: [
-				{
-					type: "Website",
-					href: "https://metamorphose-fcvnu3je6-gitcommit222s-projects.vercel.app/",
-					icon: <Icons.globe className="size-3" />,
-				},
-				{
-					type: "Source",
-					href: "https://github.com/gitcommit222/metamorphose.ai",
-					icon: <Icons.github className="size-3" />,
-				},
-			],
-			image: "/meta.png",
-			video: "",
-		},
-		{
-			title: "Paluan Tour",
-			href: "",
-			dates: "August 2024 - October 2024",
-			active: false,
-			description:
-				"A comprehensive 3 user web application the aims to track the progress and status of all tourist spots in Paluan, Occidental Mindoro.",
-			technologies: [
-				"Next.js",
-				"MySQL",
-				"Sequelize",
-				"TailwindCSS",
-				"Flowbite React",
-				"Tanstack Query",
-			],
-			links: [
-				{
-					type: "Source",
-					href: "https://github.com/gitcommit222/paluan-tour-monitoring",
-					icon: <Icons.github className="size-3" />,
-				},
-				{
-					type: "Website",
-					href: "https://paluan-tour.vercel.app/",
-					icon: <Icons.globe className="size-3" />,
-				},
-			],
-			image: "/Paluan_LANDING.png",
-			video: "",
-		},
-		{
-			title: "BatStateU Marketplace",
-			href: "http://198.177.125.118/marketplace",
+			title: "uShop - BatStateU University Shop for LIMA Campus",
+			href: "https://steerhub.store",
 			dates: "December 2024 - January 2025",
 			active: false,
 			description:
@@ -274,12 +176,12 @@ export const DATA = {
 			links: [
 				{
 					type: "Website",
-					href: "http://198.177.125.118/marketplace",
+					href: "https://steerhub.store",
 					icon: <Icons.globe className="size-3" />,
 				},
 			],
-			image: "/bsu-marketplace.png",
-			video: "",
+			image: "/ushop/Screenshot From 2026-10-03 15-51-59.png",
+			video: "/ushop/ushop.mp4",
 		},
 		{
 			title: "TRIOE",
@@ -324,29 +226,6 @@ export const DATA = {
 			],
 			image: "",
 			video: "/mhar.mp4",
-		},
-		{
-			title: "Malinta Connect",
-			href: "https://malinta-connect.vercel.app/",
-			dates: "May 2025 - Present",
-			active: false,
-			description:
-				"A web platform for Barangay Malinta residents to report issues and for officials to track their progress.",
-			technologies: ["Next.js", "TailwindCSS", "Shadcn UI", "Firebase"],
-			links: [
-				{
-					type: "Source",
-					href: "https://github.com/Marnel8/malinta-connect",
-					icon: <Icons.github className="size-3" />,
-				},
-				{
-					type: "Website",
-					href: "https://malinta-connect.vercel.app/",
-					icon: <Icons.globe className="size-3" />,
-				},
-			],
-			image: "",
-			video: "/malinta.mp4",
 		},
 	],
 	hackathons: [
@@ -796,4 +675,100 @@ export const DATA = {
 			],
 		},
 	],
+
+	// Copy for the two-lens home page (see src/components/lens). Project and
+	// skill names must match the entries above exactly; every project and skill
+	// appears in at least one lens (otherTools covers design and office tools).
+	trainingsIntro:
+		"After graduating, I joined training programs to deepen my software engineering and cloud computing fundamentals.",
+	lenses: {
+		swe: {
+			label: "Software engineering",
+			dockLabel: "Software",
+			title: "Full-stack developer",
+			intro:
+				"I build full-stack web applications in React, Next.js and Node.js, and lead full-stack development for Batangas State University’s STEERHUB platform.",
+			cta: "See software projects",
+			now: [
+				{
+					what: "University Research Associate I (Full Stack Web Developer)",
+					where: "Batangas State University - STEERHUB, since Nov 2024",
+				},
+				{ what: "Freelance Web Developer", where: "Remote, since Oct 2023" },
+			],
+			toolsTitle: "Software tools",
+			tools: [
+				"React",
+				"React Native",
+				"Next.js",
+				"JavaScript",
+				"Typescript",
+				"Node.js",
+				"FastAPI",
+				"PHP",
+				"Redux",
+				"Zustand",
+				"Tanstack Query",
+				"PostgreSQL",
+				"MySQL",
+				"MongoDB",
+				"Firebase",
+				"Appwrite",
+				"Docker",
+				"NGINX",
+				"Apache",
+			],
+			projectsTitle: "Software projects",
+			featured: "uShop - BatStateU University Shop for LIMA Campus",
+			projects: ["TRIOE"],
+		},
+		ai: {
+			label: "Data science and AI",
+			dockLabel: "Data & AI",
+			title: "Data science and AI",
+			intro:
+				"I do exploratory analysis and forecasting in Python with Jupyter and R with RStudio, and AI integration such as RAG and LLM fine‑tuning, while studying for a Master of Science in Data Science.",
+			cta: "See data and AI projects",
+			now: [
+				{
+					what: "Master of Science in Data Science",
+					where: "Batangas State University - TNEU, since 2025",
+				},
+				{
+					what: "Mhar - AI Agent Web Extension",
+					where: "Ollama and Llama 3.2, since Apr 2025",
+				},
+			],
+			toolsTitle: "Data and AI tools",
+			tools: [
+				"Python",
+				"Jupyter",
+				"R",
+				"RStudio",
+				"Data Analysis",
+				"Forecasting",
+				"FastAPI",
+				"Ollama",
+				"Llama 3.2",
+				"Claude Code",
+				"Cursor",
+				"Codex",
+			],
+			projectsTitle: "Data and AI projects",
+			featured: "Mhar - AI Agent Web Extension",
+			projects: [],
+		},
+		otherTools: ["Figma", "Photoshop", "MS Office Suite"],
+		// Which lens each experience / education entry belongs to. Entries outside
+		// the active lens are dimmed, never hidden. Keyed by `title` (work) or
+		// `degree` (education).
+		timeline: {
+			"University Research Associate I (Full Stack Web Developer)": "swe",
+			"Master of Science in Data Science": "ai",
+			"Web Developer": "swe",
+			"Layout Artist": "none",
+			"Software Developer Intern": "swe",
+			"Bachelor of Science in Information Technology": "both",
+		},
+	},
 } as const;

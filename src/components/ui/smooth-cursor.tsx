@@ -170,6 +170,9 @@ export function SmoothCursor({
       });
     };
 
+    // touch devices keep their native behaviour
+    if (!window.matchMedia("(pointer: fine)").matches) return;
+
     document.body.style.cursor = "none";
     window.addEventListener("mousemove", throttledMouseMove);
 
@@ -182,6 +185,7 @@ export function SmoothCursor({
 
   return (
     <motion.div
+      className="[@media(pointer:coarse)]:hidden"
       style={{
         position: "fixed",
         left: cursorX,
@@ -193,6 +197,8 @@ export function SmoothCursor({
         zIndex: 100,
         pointerEvents: "none",
         willChange: "transform",
+        // own view-transition layer so it keeps tracking during a lens switch
+        viewTransitionName: "lens-cursor",
       }}
       initial={{ scale: 0 }}
       animate={{ scale: 1 }}
