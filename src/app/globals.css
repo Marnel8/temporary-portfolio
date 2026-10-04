@@ -259,3 +259,11 @@ code[data-line-numbers-max-digits="3"] > [data-line]::before {
 ::view-transition-new(lens-cursor) {
   animation: none;
 }
+
+/* SmoothCursor replaces the native pointer on fine-pointer devices */
+html.smooth-cursor,
+html.smooth-cursor *,
+html.smooth-cursor *::before,
+html.smooth-cursor *::after {
+  cursor: none !important;
+}
