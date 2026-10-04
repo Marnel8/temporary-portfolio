@@ -19,7 +19,7 @@ npx tsc --noEmit                 # typecheck (clean at time of writing)
 
 ## What this is
 
-Marnel Valentin's personal portfolio (Next.js App Router, React 19, Tailwind 3, GSAP, Lenis), deployed on Vercel. Originally MagicUI's portfolio template; the live design is "Boot Sequence", a phosphor-green terminal/CRT theme. Specs and plans for each design pass live in `docs/superpowers/{specs,plans}/`.
+Mhar Nhel Valentin's personal portfolio (Next.js App Router, React 19, Tailwind 3, GSAP, Lenis), deployed on Vercel. Originally MagicUI's portfolio template; the live design is "Boot Sequence", a phosphor-green terminal/CRT theme. Specs and plans for each design pass live in `docs/superpowers/{specs,plans}/`.
 
 **Content rule:** all copy lives in `src/data/resume.tsx` (`DATA`). Never invent or delete content; `page.tsx` is layout and motion only. Home-page boot-log lines and corner labels in `page.tsx` must stay factual (derived from `DATA`).
 

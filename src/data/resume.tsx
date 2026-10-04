@@ -2,7 +2,7 @@ import { Icons } from "@/components/icons";
 import { HomeIcon } from "lucide-react";
 
 export const DATA = {
-	name: "Marnel Valentin",
+	name: "Mhar Nhel Valentin",
 	initials: "MV",
 	url: "https://me.mvsoftwares.space",
 	location: "Mamburao, Occidental Mindoro",
